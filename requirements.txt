@@ -1,0 +1,14 @@
+fastapi==0.109.2
+uvicorn==0.27.1
+streamlit==1.32.2
+xgboost==2.0.3
+shap==0.45.0
+qdrant-client==1.8.0
+langchain==0.1.13
+langgraph==0.0.26
+langchain-openai==0.1.0
+langchain-google-genai==0.0.11
+sentence-transformers==2.5.1
+pydantic==2.6.4
+python-dotenv==1.0.1
+pypdf==4.1.0
