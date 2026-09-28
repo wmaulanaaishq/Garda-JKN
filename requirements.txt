@@ -12,3 +12,4 @@ sentence-transformers==2.5.1
 pydantic==2.6.4
 python-dotenv==1.0.1
 pypdf==4.1.0
+langchain-qdrant
