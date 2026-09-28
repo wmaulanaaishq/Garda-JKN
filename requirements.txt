@@ -13,3 +13,5 @@ pydantic>=2.6.4
 python-dotenv>=1.0.1
 pypdf>=4.1.0
 langchain-qdrant>=0.1.0
+gradio
+langchain-text-splitters>=0.2.0
