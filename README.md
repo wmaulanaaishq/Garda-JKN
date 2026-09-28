@@ -1,3 +1,12 @@
+---
+title: Garda JKN BPJS
+emoji: ⚕️
+colorFrom: green
+colorTo: blue
+sdk: streamlit
+app_file: app.py
+pinned: false
+---
 # 🛡️ GARDA-JKN (Generative Agent for Risk Detection and Adjudication)
 
 ![CI/CD Pipeline](https://img.shields.io/badge/CI%2FCD-Active-success)
