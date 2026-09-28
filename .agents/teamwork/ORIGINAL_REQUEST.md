@@ -36,3 +36,38 @@ Buat skrip pengujian otomatis yang tidak hanya menjalankan alur LangGraph dari h
 
 ### Kesiapan Integrasi
 - [ ] Semua fungsi agen dan RAG dienkapsulasi dengan rapi dalam modul (misal `app/agents/` dan `app/core/`) sehingga tidak ada kode *spaghetti*.
+
+## 2026-09-27T12:32:02Z
+
+# Teamwork Project Prompt — Draft
+
+> Status: Launched
+> Goal: Craft prompt → get user approval → delegate to teamwork_preview
+> Requested team: [none — teamwork routes from the description]
+
+Melakukan perombakan, riset, dan penyempurnaan kode pipeline Data Science pada file `GARDA_JKN_Advanced_DS.ipynb` untuk sistem pendeteksi fraud klaim BPJS Kesehatan. Tujuannya adalah menjadikan notebook ini mencapai kualitas *Enterprise-Grade* berdasarkan standar literatur asuransi medis.
+
+Working directory: /home/wmaulanaaishq/projects/bpjs_2025
+Integrity mode: benchmark
+
+## Requirements
+
+### R1. Stratified Isolation Forest
+Ganti penggunaan Isolation Forest global dengan *Stratified Isolation Forest* yang mengelompokkan data berdasarkan *Base CBG* dan Kelas Rumah Sakit. Tujuannya agar prosedur kompleks (seperti transplantasi) yang secara alami berbiaya tinggi tidak ditandai sebagai anomali.
+
+### R2. Ekstraksi Fitur Komorbiditas & Clinical Incoherence
+Implementasikan logika ekstraksi fitur yang mendeteksi komorbiditas kritis (ICD-10 *suspect codes* seperti E43 untuk malnutrisi berat, J96 untuk gagal napas). Tambahkan fitur *Clinical Incoherence*—misalnya, mendeteksi jika rumah sakit menagih kasus *Sepsis/Shock* namun pasien memiliki 0 hari di ICU dan *Length of Stay* (LOS) sangat pendek.
+
+### R3. Balanced Bagging XGBoost
+Ganti algoritma XGBoost standar dengan ansambel *Balanced Bagging XGBoost*. Latih model XGBoost paralel pada seluruh data positif yang dipasangkan dengan *subsample* berimbang dari data negatif. Dilarang keras menggunakan metode SMOTE/ADASYN karena akan menghasilkan data klinis buatan yang mustahil secara medis.
+
+### R4. SHAP Auditor Reason Codes
+Buat fungsi XAI (Explainable AI) yang menerjemahkan skor *TreeSHAP* menjadi "Auditor Reason Codes" (alasan tertulis yang dapat dibaca langsung oleh tim auditor BPJS) untuk 3 fitur pendorong utama pada tiap klaim fraud.
+
+## Acceptance Criteria
+
+### Standar Teknis & Operasional
+- [ ] File `GARDA_JKN_Advanced_DS.ipynb` (atau file *script* terpisah jika diperlukan) berhasil dimodifikasi dan dapat dieksekusi tanpa *error* sintaksis.
+- [ ] *Isolation Forest* diimplementasikan dengan logika iterasi/pengelompokan (stratifikasi), bukan sekadar `model.fit()` pada seluruh *dataframe* sekaligus.
+- [ ] Evaluasi akhir menggunakan PR-AUC (Precision-Recall) atau metrik operasional (misal: top-K deteksi), bukan sekadar akurasi / ROC-AUC.
+- [ ] Skrip mendemonstrasikan cetakan *Auditor Reason Codes* ke layar untuk sedikitnya 3 contoh klaim berisiko tinggi.

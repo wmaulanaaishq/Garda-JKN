@@ -1,0 +1,24 @@
+{
+  "n_estimators": 5,
+  "feature_cols": [
+    "LOS_HARI",
+    "BIAYA_TAGIH",
+    "BIAYA_PER_HARI",
+    "SEVERITY_LEVEL",
+    "IS_RAWAT_INAP",
+    "JML_DIAG_SEKUNDER",
+    "FLAG_SUSPECT_E43",
+    "FLAG_SUSPECT_J96",
+    "FLAG_SUSPECT_SEPSIS",
+    "FLAG_SUSPECT_AKI",
+    "CLINICAL_INCOHERENCE",
+    "ISO_ANOMALY_SCORE"
+  ],
+  "estimators": [
+    "/home/wmaulanaaishq/projects/bpjs_2025/artifacts/garda_ensemble_models/estimator_0.json",
+    "/home/wmaulanaaishq/projects/bpjs_2025/artifacts/garda_ensemble_models/estimator_1.json",
+    "/home/wmaulanaaishq/projects/bpjs_2025/artifacts/garda_ensemble_models/estimator_2.json",
+    "/home/wmaulanaaishq/projects/bpjs_2025/artifacts/garda_ensemble_models/estimator_3.json",
+    "/home/wmaulanaaishq/projects/bpjs_2025/artifacts/garda_ensemble_models/estimator_4.json"
+  ]
+}

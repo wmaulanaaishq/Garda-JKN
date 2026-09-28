@@ -1,0 +1,16 @@
+{
+  "feature_cols": [
+    "LOS_HARI",
+    "BIAYA_TAGIH",
+    "BIAYA_PER_HARI",
+    "SEVERITY_LEVEL",
+    "IS_RAWAT_INAP",
+    "JML_DIAG_SEKUNDER",
+    "FLAG_SUSPECT_E43",
+    "FLAG_SUSPECT_J96",
+    "FLAG_SUSPECT_SEPSIS",
+    "FLAG_SUSPECT_AKI",
+    "CLINICAL_INCOHERENCE",
+    "ISO_ANOMALY_SCORE"
+  ]
+}

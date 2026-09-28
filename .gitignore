@@ -25,3 +25,9 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Databases & Agent Logs
+knowledge_base/qdrant_db/
+.agents/
+.deepeval/
+.gemini/

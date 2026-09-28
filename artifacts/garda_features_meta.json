@@ -1,12 +1,12 @@
 {
-    "feature_cols": [
-        "LOS_HARI",
-        "BIAYA_TAGIH",
-        "BIAYA_PER_HARI",
-        "FKL07",
-        "FKL08",
-        "FKL31",
-        "FKL21",
-        "FKL22"
-    ]
+  "feature_cols": [
+    "LOS_HARI",
+    "BIAYA_TAGIH",
+    "BIAYA_PER_HARI",
+    "FKL07",
+    "FKL08",
+    "FKL31",
+    "FKL21",
+    "FKL22"
+  ]
 }

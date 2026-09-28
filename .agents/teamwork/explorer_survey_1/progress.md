@@ -1,16 +1,14 @@
-# Progress Tracker - Explorer Survey 1
+# Progress - explorer_survey_1
 
-Last visited: 2026-09-27T07:20:40Z
-Status: COMPLETED
+Last visited: 2026-09-27T12:34:00Z
 
-## Steps
-- [x] Review DISPATCH.md and ORIGINAL_REQUEST.md
-- [x] Initialize BRIEFING.md and progress.md
-- [x] Survey project root structure and directories
-- [x] Check existing Python environments, packages, and lockfiles
-- [x] Inspect existing code under `app/`, `tests/`, etc.
-- [x] Inspect data directories, PDFs (INA-CBG, PNPK), and sample claim payloads
-- [x] Inspect environment variables and configuration files (`.env`, config modules)
-- [x] Evaluate readiness & gaps for R1 (Qdrant RAG), R2 (LangGraph), R3 (Verification/Evaluation)
-- [x] Synthesize findings and write `handoff.md`
-- [x] Send completion message to parent
+## Status
+- [x] Initialized DISPATCH.md and BRIEFING.md
+- [ ] Read ORIGINAL_REQUEST.md and orchestrator DISPATCH.md
+- [ ] Inspect Python venv and installed packages
+- [ ] Inspect files in repository / root directory
+- [ ] Inspect `GARDA_JKN_Advanced_DS.ipynb`, `GARDA_JKN_Retrain.ipynb`, `retrain_xgboost_colab.py`, `app.py`, `requirements.txt`
+- [ ] Check dataset locations, schemas, sample rows, fraud definition
+- [ ] Check existing model artifacts (.json, .pkl, .joblib, etc.)
+- [ ] Synthesize findings into handoff.md
+- [ ] Message orchestrator with findings

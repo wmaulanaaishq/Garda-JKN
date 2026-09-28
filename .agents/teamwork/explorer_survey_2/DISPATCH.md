@@ -1,35 +1,20 @@
-# Dispatch for Explorer Survey 2
+## 2026-09-27T12:33:43Z
+You are explorer_survey_2 (Type: teamwork_preview_explorer).
+Your Working Directory: /home/wmaulanaaishq/projects/bpjs_2025/.agents/teamwork/explorer_survey_2/
+Project Root: /home/wmaulanaaishq/projects/bpjs_2025
 
-## Identity
-- Role: Vector Database & RAG Specialist Investigator
-- Working Directory: /home/wmaulanaaishq/projects/bpjs_2025/.agents/teamwork/explorer_survey_2/
-- Project Root: /home/wmaulanaaishq/projects/bpjs_2025/
-- Original Request: /home/wmaulanaaishq/projects/bpjs_2025/.agents/teamwork/ORIGINAL_REQUEST.md
+Read the authoritative user request at:
+/home/wmaulanaaishq/projects/bpjs_2025/.agents/teamwork/ORIGINAL_REQUEST.md (specifically section ## 2026-09-27T12:32:02Z).
+Read DISPATCH at:
+/home/wmaulanaaishq/projects/bpjs_2025/.agents/teamwork/orchestrator_3/DISPATCH.md
 
-## Objective
-Investigate how Qdrant and RAG are currently configured or implemented in `/home/wmaulanaaishq/projects/bpjs_2025`.
-Examine:
-1. Qdrant connection parameters (local Docker vs in-memory/file-based Qdrant client vs remote host).
-2. Existing vector store code, collection names, indexing methods, embeddings (e.g. HuggingFace / FastEmbed / OpenAI / SentenceTransformers).
-3. Document chunking, metadata extraction (e.g., ICD-10 codes, PNPK disease names, INA-CBG tariff rules).
-4. Any existing `test_rag.py` or RAG test scripts.
-5. Specific technical requirements to satisfy R1 and Acceptance Criteria for Qdrant RAG.
+Your Focus:
+1. Requirements R1 & R2 deep-dive:
+   - R1: Stratified Isolation Forest. Look at how Isolation Forest is currently implemented in `GARDA_JKN_Advanced_DS.ipynb`. How are anomalies scored? How should it be grouped by Base CBG and Hospital Class (Kelas RS)? What happens if certain groups have very few samples? What is the best grouped iteration strategy?
+   - R2: Feature extraction for critical comorbidities (ICD-10 suspect codes e.g. E43 for severe malnutrition, J96 for respiratory failure) and Clinical Incoherence (e.g. Sepsis/Shock claim with 0 ICU days and short LOS). What are the exact columns in the dataset for diagnosis codes (primary, secondary), LOS, ICU days, severity level? How can these features be engineered robustly?
+2. Recommend concrete implementation steps and interface design for R1 and R2.
 
-## Output
-Write a comprehensive report to `/home/wmaulanaaishq/projects/bpjs_2025/.agents/teamwork/explorer_survey_2/handoff.md`.
-
-## 2026-09-27T07:14:44Z
-You are Explorer Survey 2 for the GARDA-JKN Healthkathon BPJS 2026 project.
-Your working directory is: /home/wmaulanaaishq/projects/bpjs_2025/.agents/teamwork/explorer_survey_2/
-Project root: /home/wmaulanaaishq/projects/bpjs_2025/
-
-Read your dispatch instructions at:
-/home/wmaulanaaishq/projects/bpjs_2025/.agents/teamwork/explorer_survey_2/DISPATCH.md
-and the authoritative user request at:
-/home/wmaulanaaishq/projects/bpjs_2025/.agents/teamwork/ORIGINAL_REQUEST.md
-
-Investigate Qdrant vector database setup, RAG implementation, embedding models, PDF chunking, metadata handling (INA-CBG, PNPK), and testing for requirement R1.
-Write a comprehensive report to:
+Write your comprehensive findings and recommendations to:
 /home/wmaulanaaishq/projects/bpjs_2025/.agents/teamwork/explorer_survey_2/handoff.md
-Update progress.md in your working directory as you work.
-When finished, send a message back to the orchestrator with a summary of your findings and the path to your handoff.md.
+Update your progress in /home/wmaulanaaishq/projects/bpjs_2025/.agents/teamwork/explorer_survey_2/progress.md.
+Send a message back when complete with the path to your handoff report.
