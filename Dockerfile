@@ -1,22 +1,25 @@
-FROM python:3.12-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
+# Install pustaka sistem yang dibutuhkan
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
-    software-properties-common \
-    git \
     && rm -rf /var/lib/apt/lists/*
 
+# Salin requirements.txt dan install dependensi
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Salin seluruh kode sumber ke dalam container
 COPY . .
 
-EXPOSE 8501
+# Berikan akses eksekusi ke skrip start.sh
+RUN chmod +x start.sh
 
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
+# Hugging Face Spaces secara default hanya membuka port 7860 ke publik
+EXPOSE 7860
 
-ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Gunakan skrip start.sh sebagai pintu masuk (menyala dua layanan sekaligus)
+ENTRYPOINT ["./start.sh"]
