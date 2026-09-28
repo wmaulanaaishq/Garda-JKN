@@ -3,7 +3,7 @@ title: Garda JKN BPJS
 emoji: ⚕️
 colorFrom: green
 colorTo: blue
-sdk: streamlit
+sdk: gradio
 app_file: app.py
 pinned: false
 ---
