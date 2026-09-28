@@ -12,8 +12,17 @@ st.markdown("""
         background-color: #3b4248 !important;
         color: #e0e0e0;
     }
-    [data-testid="stSidebar"] * {
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p, [data-testid="stSidebar"] span, [data-testid="stSidebar"] label {
         color: #e0e0e0 !important;
+    }
+    
+    /* Code Editor Style for JSON TextArea */
+    .stTextArea textarea {
+        background-color: #2b3035 !important;
+        color: #a6e22e !important;
+        font-family: 'Courier New', Courier, monospace !important;
+        border: 1px solid #1abc9c !important;
+        border-radius: 4px;
     }
     
     /* Highlight aktif di Sidebar (Aksen Hijau Toska) */
