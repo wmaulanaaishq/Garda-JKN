@@ -27,7 +27,7 @@ __pycache__/
 Thumbs.db
 
 # Databases & Agent Logs
-knowledge_base/qdrant_db/
+
 .agents/
 .deepeval/
 .gemini/
