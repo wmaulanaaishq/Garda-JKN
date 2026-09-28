@@ -15,11 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Salin seluruh kode sumber ke dalam container
 COPY . .
 
-# Berikan akses eksekusi ke skrip start.sh
-RUN chmod +x start.sh
-
 # Hugging Face Spaces secara default hanya membuka port 7860 ke publik
 EXPOSE 7860
 
-# Gunakan skrip start.sh sebagai pintu masuk (menyala dua layanan sekaligus)
-ENTRYPOINT ["./start.sh"]
+# Gunakan streamlit secara langsung
+ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]

@@ -1,6 +1,6 @@
 import streamlit as st
 import json
-import requests
+from app.agents.workflow import garda_app
 
 st.set_page_config(page_title="SIMRS V-Claim | GARDA-JKN", layout="wide", initial_sidebar_state="expanded")
 
@@ -142,13 +142,21 @@ with tab_garda:
     if process_button:
         try:
             claim_data = json.loads(claim_input)
-            st.info("📡 Mengirim data ke Microservice GARDA-JKN (`/api/v1/adjudicate-claim`)...")
+            st.info("📡 Menjalankan Evaluasi GARDA-JKN...")
             
             with st.spinner("Mengolah 4 Juta Parameter XGBoost & DeepSeek LLM..."):
-                response = requests.post("http://127.0.0.1:8000/api/v1/adjudicate-claim", json={"claim_data": claim_data})
+                # Menjalankan LangGraph agent secara langsung (Tanpa HTTP API)
+                initial_state = {"claim_data": claim_data}
+                final_state = garda_app.invoke(initial_state)
                 
-            if response.status_code == 200:
-                result = response.json()
+                result = {
+                    "decision": final_state.get("final_status", "UNKNOWN"),
+                    "adjudication_reason": final_state.get("adjudication_reason", ""),
+                    "ml_risk_score": final_state.get("ml_risk_score", 0.0),
+                    "ml_explanation": final_state.get("ml_explanation", ""),
+                    "is_anomalous": final_state.get("is_anomalous", False),
+                    "rag_context": final_state.get("rag_context", "")
+                }
                 
                 # Menggunakan container kustom untuk hasil
                 col1, col2 = st.columns(2)
@@ -186,12 +194,9 @@ with tab_garda:
                     st.markdown("**SHAP Auditor Reason Codes (BAP):**")
                     st.warning(result.get('ml_explanation', 'Tidak ada anomali terdeteksi.'))
                     st.markdown('</div>', unsafe_allow_html=True)
-                    
-            else:
-                st.error(f"API Error ({response.status_code}): {response.text}")
 
         except Exception as e:
-            st.error(f"Kesalahan koneksi. Pastikan API FastAPI berjalan di port 8000. Error: {e}")
+            st.error(f"Kesalahan pemrosesan data: {e}")
     else:
         st.info("👈 Silakan modifikasi data klaim di Sidebar dan klik 'Kirim ke V-Claim (Evaluasi AI)' untuk memulai.")
 
