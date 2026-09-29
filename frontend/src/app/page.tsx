@@ -29,7 +29,7 @@ export default function VClaimPage() {
       const parsedPayload = JSON.parse(payload);
       // In production, this points to your Render.com / Railway FastAPI URL
       // For now, it points to local if testing locally
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1/adjudicate';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://web-production-c93a2.up.railway.app/api/v1/adjudicate';
       
       const res = await fetch(apiUrl, {
         method: 'POST',
