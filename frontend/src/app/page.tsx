@@ -152,16 +152,66 @@ export default function VClaimPage() {
                                     <>
                                       {/* AI Status Banner */}
                                       <div className={`${response.response.decision === 'APPROVED' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} border-b px-4 py-3 flex items-start space-x-3`}>
-                                          <svg className={`w-5 h-5 ${response.response.decision === 'APPROVED' ? 'text-green-500' : 'text-red-500'} mt-0.5`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                          {response.response.decision === 'APPROVED' ? (
+                                            <svg className="w-6 h-6 text-green-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                          ) : (
+                                            <svg className="w-6 h-6 text-red-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                          )}
                                           <div>
                                               <div className={`text-sm font-bold ${response.response.decision === 'APPROVED' ? 'text-green-700' : 'text-red-700'}`}>STATUS: {response.response.decision}</div>
                                               <div className={`text-xs ${response.response.decision === 'APPROVED' ? 'text-green-600' : 'text-red-600'} mt-0.5`}>Skor Risiko: {(response.response.ml_risk_score * 100).toFixed(1)}%</div>
                                           </div>
                                       </div>
-                                      
-                                      {/* Detailed JSON Response */}
-                                      <div className="p-4 font-mono text-sm text-gray-700 overflow-y-auto json-area whitespace-pre">
-                                        {JSON.stringify(response, null, 2)}
+
+                                      {/* Structured Result Cards */}
+                                      <div className="p-4 overflow-y-auto flex-1 space-y-3">
+                                        <div className="grid grid-cols-3 gap-3">
+                                          <div className="bg-gray-50 rounded p-3 border">
+                                            <div className="text-xs text-gray-500 uppercase font-semibold">Keputusan</div>
+                                            <div className={`text-base font-bold mt-1 ${response.response.decision === 'APPROVED' ? 'text-green-600' : 'text-red-600'}`}>{response.response.decision}</div>
+                                          </div>
+                                          <div className="bg-gray-50 rounded p-3 border">
+                                            <div className="text-xs text-gray-500 uppercase font-semibold">Severity Level</div>
+                                            <div className="text-base font-bold mt-1 text-gray-800">{response.response.severity_level}</div>
+                                          </div>
+                                          <div className="bg-gray-50 rounded p-3 border">
+                                            <div className="text-xs text-gray-500 uppercase font-semibold">Confidence</div>
+                                            <div className="text-base font-bold mt-1 text-blue-600">{(response.response.confidence_score * 100).toFixed(1)}%</div>
+                                          </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-3">
+                                          <div className="bg-gray-50 rounded p-3 border">
+                                            <div className="text-xs text-gray-500 uppercase font-semibold">ML Risk Score</div>
+                                            <div className="text-base font-bold mt-1 text-orange-600">{(response.response.ml_risk_score * 100).toFixed(2)}%</div>
+                                          </div>
+                                          <div className="bg-gray-50 rounded p-3 border">
+                                            <div className="text-xs text-gray-500 uppercase font-semibold">Anomali</div>
+                                            <div className={`text-base font-bold mt-1 ${response.response.is_anomalous ? 'text-red-600' : 'text-green-600'}`}>{response.response.is_anomalous ? 'YA' : 'TIDAK'}</div>
+                                          </div>
+                                        </div>
+
+                                        {response.response.adjudication_reason && (
+                                          <div className="bg-blue-50 rounded p-3 border border-blue-200">
+                                            <div className="text-xs text-blue-600 uppercase font-semibold">Alasan Adjudikasi</div>
+                                            <div className="text-sm text-gray-700 mt-1 leading-relaxed">{response.response.adjudication_reason}</div>
+                                          </div>
+                                        )}
+
+                                        {response.response.rag_context && (
+                                          <div className="bg-purple-50 rounded p-3 border border-purple-200">
+                                            <div className="text-xs text-purple-600 uppercase font-semibold">Referensi PNPK (RAG)</div>
+                                            <div className="text-sm text-gray-700 mt-1 leading-relaxed whitespace-pre-wrap">{response.response.rag_context}</div>
+                                          </div>
+                                        )}
+
+                                        {/* Collapsible Raw JSON */}
+                                        <details className="border rounded">
+                                          <summary className="px-3 py-2 text-xs font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 uppercase">Raw JSON Response</summary>
+                                          <div className="p-3 font-mono text-xs text-gray-600 bg-gray-50 overflow-x-auto whitespace-pre">
+                                            {JSON.stringify(response, null, 2)}
+                                          </div>
+                                        </details>
                                       </div>
                                     </>
                                   ) : (
