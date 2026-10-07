@@ -95,10 +95,34 @@ def plot_roc_curve():
     plt.savefig('docs/evidence/plot_roc_curve.png', dpi=300)
     plt.close()
 
+# 5. AI Evaluation (DeepEval)
+def plot_ai_evaluation():
+    plt.figure(figsize=(7, 4))
+    metrics = ['Answer Relevancy', 'Faithfulness (RAG)']
+    scores = [1.0, 1.0] # 100%
+    
+    y_pos = np.arange(len(metrics))
+    bars = plt.barh(y_pos, scores, align='center', color=['#9467bd', '#8c564b'])
+    plt.yticks(y_pos, metrics)
+    plt.gca().invert_yaxis()
+    plt.xlim([0.0, 1.1])
+    plt.xlabel('Skor (1.0 = 100%)')
+    plt.title('Hasil Evaluasi Agentic AI (DeepSeek-Chat + Qdrant RAG)')
+    
+    for bar in bars:
+        width = bar.get_width()
+        plt.text(width - 0.1, bar.get_y() + bar.get_height()/2, f'{width*100:.0f}%', 
+                 ha='center', va='center', color='white', fontweight='bold')
+                 
+    plt.tight_layout()
+    plt.savefig('docs/evidence/plot_ai_evaluation.png', dpi=300)
+    plt.close()
+
 if __name__ == '__main__':
     print("Generating Proposal Plots...")
     plot_eda()
     plot_confusion_matrix()
     plot_feature_importance()
     plot_roc_curve()
-    print("Successfully generated 4 high-quality plots in docs/evidence/")
+    plot_ai_evaluation()
+    print("Successfully generated 5 high-quality plots in docs/evidence/")

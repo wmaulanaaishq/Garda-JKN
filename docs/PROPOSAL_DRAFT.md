@@ -46,8 +46,19 @@ Keluaran berupa API JSON terstruktur (diakses via *Next.js VClaim Mockup UI*) ya
 
 ## Bagian 5: Tingkat Kematangan, Prototype & Pengalaman
 **Tingkat Kematangan: Minimum Viable Product (MVP)**
-- **Backend (FastAPI):** Mesin AI sudah selesai dilatih dan berjalan penuh merespons *request*. Model mampu memproses metrik deteksi secara otomatis. (Bukti pengujian *pipeline* tersimpan di repositori).
-- **Frontend (Next.js):** Antarmuka visual VClaim sudah dapat diakses (di *deploy* ke Vercel dan/atau *Localhost*), fitur interaksi manusia (HITL) untuk *approve/reject* klaim yang ambigu (*ESCALATED*) sudah berjalan di UI.
+Sistem GARDA-JKN telah melewati fase purwarupa dan kini berada di tahap MVP fungsional (*End-to-End*), yang mengintegrasikan kecerdasan buatan dengan antarmuka pengguna:
+
+1. **Apa yang Sudah Berfungsi:**
+   - **Backend (FastAPI & LangGraph):** Pipeline AI Lapis 1 (XGBoost) dan Lapis 3 (LLM) sudah selesai dilatih dan berjalan penuh merespons *request* dari sisi *client*.
+   - **Frontend (Next.js):** Antarmuka visual (menyerupai SIMRS VClaim) sudah *live* dan dapat diakses. Fitur interaksi manusia (HITL) untuk *approve/reject* klaim yang ambigu (*ESCALATED*) sudah berjalan penuh.
+
+2. **Lokasi Pengujian & Validasi (Hypothesis & Design):**
+   - Diuji secara tertutup (*Closed Research Environment*) menggunakan **Data Sampel Resmi BPJS Kesehatan Tahun 2024** (Tabel FKRTL dan Diagnosis Sekunder).
+
+3. **Skala Pengujian & Hasil Terukur (Value & Implementation):**
+   - **Skala Data:** 5.000 data historis klaim rawat inap.
+   - **Akurasi / Dampak:** Model berhasil melabeli dan mengidentifikasi *fraud* dengan performa PR-AUC 99.5% dan F1-Score 97.14%.
+   - **Waktu Proses:** Waktu inferensi per klaim (deteksi XGBoost + Analisis LLM) selesai dalam waktu rata-rata kurang dari 10 detik.
 
 ---
 

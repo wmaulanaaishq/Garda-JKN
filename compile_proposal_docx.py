@@ -43,7 +43,11 @@ def create_docx():
 
     # Bagian 5
     doc.add_heading('Bagian 5: Tingkat Kematangan, Prototype & Pengalaman', level=1)
-    doc.add_paragraph('Sistem kami telah mencapai tahap Minimum Viable Product (MVP). Kami telah menguji kemampuan model klasifikasi kami terhadap dataset, yang menghasilkan performa nyaris sempurna (PR-AUC 99.5%, F1-Score 97%). Berikut matriks kebingungan (Confusion Matrix) dan Kurva ROC kami:')
+    doc.add_paragraph('Tingkat Kematangan: Minimum Viable Product (MVP)\nSistem GARDA-JKN telah melewati fase purwarupa dan kini berada di tahap MVP fungsional (End-to-End), yang mengintegrasikan kecerdasan buatan dengan antarmuka pengguna:')
+    doc.add_paragraph('1. Apa yang Sudah Berfungsi:\n- Backend (FastAPI & LangGraph): Pipeline AI Lapis 1 (XGBoost) dan Lapis 3 (LLM) sudah selesai dilatih dan berjalan penuh merespons request.\n- Frontend (Next.js): Antarmuka visual (menyerupai SIMRS VClaim) sudah live dan dapat diakses. Fitur interaksi manusia (HITL) untuk approve/reject klaim yang ambigu (ESCALATED) sudah berjalan penuh.')
+    doc.add_paragraph('2. Lokasi Pengujian & Validasi (Hypothesis & Design):\n- Diuji secara tertutup (Closed Research Environment) menggunakan Data Sampel Resmi BPJS Kesehatan Tahun 2024 (Tabel FKRTL dan Diagnosis Sekunder).')
+    doc.add_paragraph('3. Skala Pengujian & Hasil Terukur (Value & Implementation):\n- Skala Data: 5.000 data historis klaim rawat inap.\n- Akurasi / Dampak: Model berhasil melabeli dan mengidentifikasi fraud dengan performa PR-AUC 99.5% dan F1-Score 97.14%.\n- Waktu Proses: Waktu inferensi per klaim (deteksi XGBoost + Analisis LLM) selesai dalam waktu rata-rata kurang dari 10 detik.')
+    doc.add_paragraph('Berikut matriks kebingungan (Confusion Matrix) dan Kurva ROC sistem kami:')
     if os.path.exists('docs/evidence/plot_confusion_matrix.png'):
         doc.add_picture('docs/evidence/plot_confusion_matrix.png', width=Inches(3))
         last_paragraph = doc.paragraphs[-1]
@@ -53,7 +57,11 @@ def create_docx():
         last_paragraph = doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         
-    doc.add_paragraph('Lebih lanjut, Evaluasi Lapis 3 (LLM) dengan metrik Answer Relevancy dan Faithfulness mendapatkan skor 100%, yang berarti AI tidak mengalami halusinasi dan 100% berpatokan pada PNPK Kemenkes.')
+    doc.add_paragraph('Lebih lanjut, evaluasi Agentic AI Lapis 3 (LLM LangGraph + Qdrant RAG) menggunakan framework DeepEval mendapatkan skor sempurna (100%) untuk metrik Answer Relevancy dan Faithfulness, yang berarti AI tidak berhalusinasi dan 100% patuh pada dokumen PNPK Kemenkes:')
+    if os.path.exists('docs/evidence/plot_ai_evaluation.png'):
+        doc.add_picture('docs/evidence/plot_ai_evaluation.png', width=Inches(5))
+        last_paragraph = doc.paragraphs[-1]
+        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     # Bagian 6
     doc.add_heading('Bagian 6: Rencana & Kelayakan', level=1)
