@@ -20,3 +20,15 @@
 - **Fraud Class F1-Score:** 0.9714
 
 *(Catatan: Model dilatih menggunakan Stratified Isolation Forest dengan 14 primary strata, 12 Base CBG fallbacks, dan 18 CMG fallbacks untuk menghindari bias rumah sakit kelas kecil).*
+
+## Hasil Evaluasi AI Lapis 3 (DeepEval)
+**Model Evaluator:** DeepSeek-Chat
+**Metrik 1: Answer Relevancy** 
+- **Skor Rata-Rata:** 1.00 (100.0%)
+- **Status:** Lulus (Passed)
+- *Arti: Berita Acara Pemeriksaan (BAP) yang dihasilkan oleh LLM sangat relevan dengan input klaim BPJS yang diberikan (tidak ada halusinasi info yang tidak terkait).*
+
+**Metrik 2: Faithfulness**
+- **Skor Rata-Rata:** 1.00 (100.0%)
+- **Status:** Lulus (Passed)
+- *Arti: Penarikan kesimpulan LLM 100% setia (faithful) pada pedoman medis PNPK Kemenkes yang disediakan oleh Qdrant RAG (Vector Database), tanpa mengarang pedoman fiktif.*
