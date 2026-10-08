@@ -5,40 +5,46 @@
 ![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Model](https://img.shields.io/badge/AI-DeepSeek_R1_%7C_XGBoost-orange)
 ![Orchestration](https://img.shields.io/badge/Orchestration-LangGraph-purple)
+![Security](https://img.shields.io/badge/Security-Prompt_Injection_Guard-red)
 
-**GARDA-JKN** adalah ekosistem AI adjudikasi klaim medis *end-to-end* berskala *enterprise* yang dirancang khusus untuk BPJS Kesehatan. Sistem ini beralih dari deteksi penipuan berbasis aturan tradisional (*rule-based heuristic*) menjadi mesin penalaran klinis yang dapat menjelaskan keputusannya secara transparan (*Explainable AI*) dan mengintegrasikan peran manusia dalam pengambilan keputusan (*Human-in-the-Loop*).
+**GARDA-JKN** adalah ekosistem AI adjudikasi klaim medis *end-to-end* berskala *enterprise* yang dirancang khusus untuk memberikan solusi mutakhir pada kompetisi **Healthkathon BPJS Kesehatan 2026**.
 
-Sistem ini dilatih menggunakan **4 juta baris data empiris BPJS (FKRTL & Diagnosis Sekunder)** untuk memberantas fenomena *Upcoding*, *Phantom Billing*, dan *Clinical Incoherence*.
+Sistem ini beralih dari deteksi penipuan berbasis aturan tradisional (*rule-based heuristic*) menjadi mesin penalaran klinis berlapis yang dapat menjelaskan keputusannya secara transparan (*Explainable AI*), mengamankan data medis (*Zero-Knowledge Masking*), dan mengintegrasikan peran manusia dalam pengambilan keputusan (*Human-in-the-Loop*).
+
+Sistem ini dilatih menggunakan **4 juta baris data empiris BPJS (FKRTL & Diagnosis Sekunder)** untuk memberantas fenomena *Upcoding* (manipulasi tingkat keparahan), *Phantom Billing* (klaim fiktif), dan *Clinical Incoherence*.
 
 ---
 
-## 🏗️ Arsitektur Multi-Lapis (Microservice)
+## 🏗️ Arsitektur Multi-Lapis (Microservice & LangGraph)
 
-GARDA-JKN mengadopsi arsitektur yang sepenuhnya *decoupled* (Frontend Next.js dan Backend FastAPI) dengan AI tiga lapis yang berjalan secara konkuren:
+GARDA-JKN mengadopsi arsitektur yang sepenuhnya terpisah (*decoupled*) antara Frontend Next.js dan Backend FastAPI, yang diorkestrasi oleh **LangGraph State Machine**. Alur kerja klaim melewati 4 lapisan perlindungan mutakhir:
 
-1. **Lapis 1 (High-Speed Screening - XGBoost)** ⚡
-   Mendeteksi anomali finansial (menggunakan *Stratified Isolation Forest* untuk menghindari bias faskes) dan menghasilkan **SHAP Auditor Reason Codes** untuk transparansi (*Explainable AI*).
-2. **Lapis 2 (Medical Knowledge - Qdrant RAG)** 📚
-   Membaca otomatis ratusan dokumen PNPK Kemenkes via PDF *Vector Search* untuk menemukan landasan diagnosis yang valid berdasarkan kode ICD-10.
-3. **Lapis 3 (Clinical Arbiter - LLM LangGraph)** 🤖
-   Agen AI yang bertugas sebagai Verifikator Medis. Ia menggabungkan hasil Lapis 1 & 2 untuk menghasilkan BAP medis (*Approved, Downgraded, Escalated*).
+1. **Lapis Keamanan (Intake & Security Guardrail)** 🔒
+   Sistem menyamarkan identitas privasi (PII) sesuai **UU PDP No. 27/2022** (*Zero-Knowledge Masking*) dan melakukan pemindaian Regex ketat untuk memblokir serangan siber *Prompt Injection* (seperti bypass instruksi AI).
+2. **Lapis 1 (High-Speed Screening - XGBoost)** ⚡
+   Mendeteksi anomali finansial secara instan menggunakan *Stratified Isolation Forest* (menghindari bias antara RS Kelas A hingga D) dan menghasilkan skor probabilitas beserta **SHAP Auditor Reason Codes**.
+3. **Lapis 2 (Medical Knowledge - Qdrant RAG)** 📚
+   Membaca ratusan halaman dokumen PNPK Kemenkes via *Vector Search* untuk menemukan landasan klinis. Didukung oleh `PyMuPDF4LLM` agar format tabel dosis dan aturan medis tetap presisi.
+4. **Lapis 3 (Clinical Arbiter - LLM)** 🤖
+   Agen AI (DeepSeek via AIML API) bertindak sebagai Verifikator Medis. Ia menggabungkan hasil Lapis 1 & 2 untuk menerbitkan Berita Acara Medis (*Approved, Downgraded, Escalated*).
 
-## ✨ Fitur Utama (UI/UX)
+---
 
-Sistem antarmuka (Frontend) dibuat semirip mungkin dengan **SIMRS VClaim BPJS**, ditambah fitur-fitur AI tingkat lanjut:
-* **Human-in-the-Loop (HITL)**: Apabila AI tidak yakin (status `ESCALATED`), UI secara cerdas akan mengalihkan kendali kepada Verifikator Manusia untuk memberikan keputusan akhir (Setujui, Turunkan Severity, atau Tolak) beserta catatan klinis.
-* **Audit Log SHAP**: Dasbor transparan untuk melihat jejak penalaran (Reason Codes) XGBoost.
-* **Database RAG (PNPK) terintegrasi**: Manajemen dokumen PDF pedoman medis langsung dari *browser*.
-* **Zero-Knowledge Privacy Masking**: Sesuai UU PDP No. 27/2022, semua data identitas (*PII*) disensor di Node 1 sebelum diproses oleh LLM.
+## ✨ Fitur Utama (UI/UX Dasbor Verifikator)
+
+Antarmuka (Frontend) dibuat semirip mungkin dengan **SIMRS VClaim BPJS**, ditambah metrik AI:
+* **Human-in-the-Loop (HITL)**: Apabila klaim meragukan (status `ESCALATED`), AI menyerahkan kendali kepada Verifikator Manusia untuk memberikan putusan manual terakhir. Mesin tidak pernah bertindak diktator.
+* **Audit Log SHAP**: Dasbor transparan menampilkan kontribusi setiap variabel (misal: "Lama Rawat" atau "Biaya Tagih") yang membuat klaim dicurigai.
+* **Streaming Responses**: Menggunakan Server-Sent Events (SSE) agar hasil adjudikasi tampil seketika (*real-time*).
 
 ---
 
 ## 🚀 Panduan Instalasi (Development)
 
-Proyek ini dipisahkan menjadi dua bagian utama: **Backend FastAPI** dan **Frontend Next.js**. Keduanya harus dijalankan secara paralel.
+Sistem ini dipisah menjadi Backend (FastAPI) dan Frontend (Next.js). Keduanya harus berjalan paralel.
 
 ### 1. Menyiapkan Backend (Python / FastAPI)
-Backend mengelola ML Pipeline (XGBoost, LangGraph, Qdrant).
+Backend mengelola ML Pipeline, LangGraph, dan Vector DB.
 ```bash
 # Clone repository
 git clone https://github.com/wmaulanaaishq/Garda-JKN.git
@@ -57,7 +63,7 @@ uvicorn api:app --host 0.0.0.0 --port 8000
 Backend akan berjalan di `http://localhost:8000`.
 
 ### 2. Menyiapkan Frontend (Node.js / Next.js)
-Frontend berisi antarmuka petugas rumah sakit (VClaim).
+Frontend memuat antarmuka petugas VClaim.
 ```bash
 # Buka terminal baru dan masuk ke folder frontend
 cd Garda-JKN/frontend
@@ -65,11 +71,10 @@ cd Garda-JKN/frontend
 # Install dependensi Node.js
 npm install
 
-# Jalankan server Next.js mode development
+# Jalankan server Next.js
 npm run dev
 ```
-Frontend akan berjalan di `http://localhost:3000`. 
-Buka *browser* Anda dan arahkan ke alamat tersebut untuk menggunakan sistem.
+Frontend akan terbuka di `http://localhost:3000`. 
 
 ---
 
@@ -77,28 +82,28 @@ Buka *browser* Anda dan arahkan ke alamat tersebut untuk menggunakan sistem.
 
 ```text
 Garda-JKN/
-├── api.py                  # Entrypoint peladen FastAPI
+├── api.py                  # Entrypoint peladen FastAPI (Mendukung SSE)
 ├── app/
-│   ├── agents/             # Logic LangGraph (nodes, state, workflow, trace)
-│   ├── core/               # Konfigurasi LLM, ML Engine (XGBoost), dan Qdrant DB
+│   ├── agents/             # Node LangGraph (Security, ML, RAG, Arbiter)
+│   ├── core/               # Integrasi LLM, XGBoost, dan Qdrant DB
 │   └── models/             # Schema Pydantic
 ├── frontend/               # Kode sumber Next.js (React, Tailwind CSS)
-│   ├── src/app/page.tsx    # Halaman utama (VClaim UI + Dasbor AI)
-│   └── package.json        # Dependensi Node.js
-├── Data RAG/               # Repositori file PDF PNPK medis (Kemenkes)
-├── artifacts/              # File binary ML (Model XGBoost, Scaler, Imputer)
-├── evaluation/             # Pipeline pengujian LLM (DeepEval & Ragas)
-└── requirements.txt        # Dependensi Python backend
+├── Data RAG/               # Kumpulan PDF Medis PNPK dari Kemenkes RI
+├── artifacts/              # File binary ML statis (Model XGBoost & Config)
+├── docs/                   # 📑 DOKUMENTASI LENGKAP & PROPOSAL
+├── evaluation/             # Pipeline pengujian RAG Triad (DeepEval)
+├── scripts/                # Utility untuk ML Ops & Generate Docs
+└── tests/                  # Skrip PyTest
 ```
+> **Lihat detail arsitektur dan bisnis plan lengkap di direktori [`docs/`](docs/)**
 
 ---
 
-## 🧪 Pengujian AI & CI/CD
+## 🧪 Pengujian AI & CI/CD (LLMOps)
 
-GARDA-JKN mengimplementasikan **Standar Industri CI/CD** melalui GitHub Actions. 
-Setiap kode yang didorong ke repositori ini akan secara otomatis melewati:
-- **Unit Testing (PyTest)** untuk memvalidasi algoritma Lapis 1 (ML Engine).
-- **Adversarial & Concurrency Testing** untuk memastikan keandalan *State Machine* LangGraph di bawah beban tinggi (5+ *requests* bersamaan).
-- **AI Agent Evaluation (Ragas & DeepEval)** untuk menghitung tingkat *Faithfulness* dan *Answer Relevancy* (anti-halusinasi) dari LLM Arbiter.
+GARDA-JKN menjunjung tinggi reliabilitas. Setiap eksekusi dapat diuji menggunakan kumpulan *script* di folder `tests/` yang mencakup:
+- **Unit Testing (PyTest)** untuk memvalidasi algoritma Lapis 1.
+- **Security Testing** untuk memvalidasi bahwa *Guardrail* sukses menangkis *Prompt Injection*.
+- **AI Agent Evaluation (DeepEval)** untuk menghitung tingkat *Faithfulness* dan *Answer Relevancy* (anti-halusinasi) dari teks BAP medis yang dihasilkan AI.
 
-*(Dikembangkan untuk memajukan ekosistem JKN Indonesia 🇮🇩)*
+*(Inovasi ini dikembangkan untuk menjaga amanah dan memajukan ekosistem JKN Indonesia 🇮🇩)*
