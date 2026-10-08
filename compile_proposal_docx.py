@@ -25,8 +25,9 @@ def create_docx():
     doc.add_paragraph('Jika kecurangan berlapis ini tidak ditekan di fase pre-payment menggunakan sistem pendeteksi cerdas yang mampu membedah pola non-linear secara seketika (real-time), kebocoran anggaran JKN akan menggerus keberlanjutan jaminan kesehatan nasional bagi ratusan juta rakyat Indonesia.')
     
     # Bagian 3
-    doc.add_heading('Bagian 3: Solusi & Keunggulan', level=1)
+    doc.add_heading('Bagian 3: Solusi, Keunggulan & Arsitektur', level=1)
     doc.add_paragraph('Ide Solusi:\nMembangun platform verifikasi klaim 3-Lapis (Microservice):\n1. Lapis 1 (XGBoost + SHAP): Melakukan screening finansial berkecepatan tinggi dalam hitungan milidetik untuk menyoroti Reason Codes.\n2. Lapis 2 (Qdrant RAG): Mesin pencarian vektor otomatis yang membandingkan klaim dengan ratusan dokumen resmi Pedoman Nasional Pelayanan Kedokteran (PNPK). RAG kami mengimplementasikan "Advanced PDF Parsing" (PyMuPDF4LLM) untuk membaca tabel dan struktur bersarang menjadi format Markdown.\n3. Lapis 3 (LLM Agent): Clinical Arbiter yang menyintesis temuan dari Lapis 1 & 2 untuk menerbitkan rekomendasi Berita Acara (APPROVED, DOWNGRADED, ESCALATED).')
+    doc.add_paragraph('Alur Workflow Sistem:\nKlaim RS Masuk -> Lapis 1 (Financial Screening) -> Jika skor risiko tinggi, masuk Lapis 2 (Cari PNPK) -> Lapis 3 (LLM Arbiter) -> Keputusan (Auto-Approve / Downgrade / Escalate ke Manusia).')
     
     # Bagian 4
     doc.add_heading('Bagian 4: Pendekatan Teknis & Data (Visualisasi)', level=1)
@@ -65,8 +66,8 @@ def create_docx():
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     # Bagian 6
-    doc.add_heading('Bagian 6: Rencana & Kelayakan', level=1)
-    doc.add_paragraph('Fase 1 (Bulan 1-2): Uji Coba Simulasi (Saat Ini)\nFase 2 (Bulan 3-4): Pilot Test Terbatas di satu rumah sakit tipe A.\nFase 3 (Bulan 5-6): Skalabilitas Nasional menggunakan infrastruktur cloud BPJS Kesehatan.')
+    doc.add_heading('Bagian 6: Rencana & Model Bisnis (VHDIC Canvas)', level=1)
+    doc.add_paragraph('VHDIC Canvas:\n- Viability: Pendapatan dari penghematan anggaran (Cost-Saving). Jika 1% kebocoran dari Rp10 Triliun bisa dicegah, BPJS hemat Rp100 Miliar/tahun.\n- Hypothesis: Verifikator kewalahan. AI RAG akan menyelesaikan masalah ini dalam <10 detik per klaim.\n- Design: Arsitektur Microservice (FastAPI + Next.js) dengan AI Multi-Layer.\n- Implementation: Fase 1 (Simulasi), Fase 2 (Pilot RS Tipe A), Fase 3 (Nasional).\n- Cost: Biaya operasional mencakup API token LLM, server cloud, dan Vector DB (ROI sangat positif dibandingkan nilai fraud yang digagalkan).')
 
     # Bagian 7
     doc.add_heading('Bagian 7: Dampak & Nilai', level=1)

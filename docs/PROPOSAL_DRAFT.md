@@ -30,6 +30,19 @@ Membangun platform verifikasi klaim 3-Lapis (Microservice):
 2. **Lapis 2 (Qdrant RAG):** Mesin pencarian vektor otomatis yang membandingkan klaim dengan ratusan dokumen resmi Pedoman Nasional Pelayanan Kedokteran (PNPK). RAG kami mengimplementasikan "Advanced PDF Parsing" (PyMuPDF4LLM) untuk mengurai tabel bersarang menjadi Markdown agar LLM tidak kehilangan konteks medis.
 3. **Lapis 3 (LLM Agent):** *Clinical Arbiter* yang menyintesis temuan dari Lapis 1 & 2 untuk menerbitkan rekomendasi Berita Acara (APPROVED, DOWNGRADED, ESCALATED).
 
+**Arsitektur & Workflow Sistem:**
+```mermaid
+flowchart TD
+    A[Klaim RS Masuk] --> B(Lapis 1: XGBoost Financial Screening)
+    B --> C{Skor Risiko Fraud?}
+    C -->|Rendah| D[Auto-Approve]
+    C -->|Tinggi| E(Lapis 2: Qdrant RAG - Cari PNPK)
+    E --> F(Lapis 3: LLM Clinical Arbiter)
+    F --> G{Rekomendasi AI}
+    G -->|Downgrade| H[Terbitkan Berita Acara Downgrade]
+    G -->|Escalate| I[Verifikator Manusia / HITL]
+```
+
 **Keunggulan Utama:**
 - **Explainability:** Menerjemahkan skor AI menjadi *Auditor Reason Codes* yang mudah dipahami (misal: "Biaya tagih Rp 7.3 juta menyimpang secara signifikan untuk INA-CBG ini").
 - **Kesesuaian Regulasi (UU PDP):** Menjalankan *Zero-Knowledge Privacy Masking* pada data identitas sebelum dikirim ke AI Lapis 3.
@@ -66,13 +79,13 @@ Sistem GARDA-JKN telah melewati fase purwarupa dan kini berada di tahap MVP fung
 
 ---
 
-## Bagian 6: Rencana & Kelayakan
-**Fase 1 (Bulan 1-2): Uji Coba Simulasi (Saat Ini)**
-Validasi performa dan integrasi antara LLM (*LangGraph*) dan metrik XGBoost menggunakan Data Sampel BPJS di lingkungan *sandbox*.
-**Fase 2 (Bulan 3-4): Pilot Test Terbatas**
-Menghubungkan API GARDA-JKN sebagai *middleware* uji coba di satu rumah sakit tipe A (contoh: RSUP Dr. Wahidin Sudirohusodo).
-**Fase 3 (Bulan 5-6): Skalabilitas Nasional**
-Optimasi kecepatan *throughput* API dengan *Load Balancer* dan integrasi penuh dengan basis data utama BPJS.
+## Bagian 6: Rencana, Model Bisnis (VHDIC Canvas) & Kelayakan
+**VHDIC Canvas (Viability, Hypothesis, Design, Implementation, Cost):**
+- **Viability:** Pendapatan dari penghematan anggaran (Cost-Saving). Jika 1% kebocoran dari Rp10 Triliun bisa dicegah, BPJS hemat Rp100 Miliar/tahun.
+- **Hypothesis:** Verifikator kesulitan mengecek PNPK secara manual. AI RAG akan menyelesaikan masalah ini dalam 10 detik per klaim.
+- **Design:** Arsitektur Microservice (FastAPI + Next.js) dengan AI Multi-Layer.
+- **Implementation:** Fase 1 (Simulasi), Fase 2 (Pilot RS Tipe A), Fase 3 (Nasional).
+- **Cost:** Biaya operasional mencakup API token LLM (DeepSeek/GPT), server cloud (Railway/Render), dan Vector DB (Qdrant). ROI sangat positif karena biaya infrastruktur jauh di bawah nilai klaim fraud yang berhasil digagalkan.
 
 ---
 
