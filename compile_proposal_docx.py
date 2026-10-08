@@ -20,8 +20,9 @@ def create_docx():
     
     # Bagian 2
     doc.add_heading('Bagian 2: Masalah & Urgensi', level=1)
-    doc.add_paragraph('Spesifisitas Masalah:\nKebocoran dana Program JKN yang disebabkan oleh inefisiensi dan klaim fiktif di fasilitas kesehatan (seperti upcoding tingkat severity dan klaim durasi rawat yang dimanipulasi).')
-    doc.add_paragraph('Dukungan Data & Urgensi:\nDi lapangan, verifikator medis BPJS kewalahan dengan jutaan baris klaim yang harus diperiksa secara manual setiap bulannya. Jika fraud ini tidak ditekan menggunakan sistem pendeteksi cerdas yang dapat membaca pola non-linear, defisit anggaran JKN akan terus membesar yang berujung pada terganggunya kualitas layanan bagi seluruh rakyat Indonesia.')
+    doc.add_paragraph('Spesifisitas Masalah:\nKebocoran dana Program JKN akibat fraud sistemik di Fasilitas Kesehatan Tingkat Lanjut (FKRTL). Modus utama mencakup Upcoding (manipulasi tingkat severity INA-CBG agar tarif lebih mahal), Phantom Billing (klaim pasien/tindakan fiktif), dan Readmisi (pemecahan episode rawat inap).')
+    doc.add_paragraph('Dukungan Data & Urgensi:\n- Kerugian Finansial: Berdasarkan tinjauan KPK dan Kemenkes (2024), estimasi kebocoran dana JKN mencapai 5-10% dari beban klaim (Rp10-15 Triliun per tahun). Bahkan pada Juli 2024, KPK menemukan Phantom Billing Rp35 Miliar hanya dari 3 rumah sakit.\n- Beban Kerja Ekstrem: Dari 606,7 juta pemanfaatan JKN di 2023, terdapat 8-12 juta klaim FKRTL per bulan. Ribuan verifikator dibatasi tenggat SLA 15 hari, membuat verifikasi manual sangat rentan human error.')
+    doc.add_paragraph('Jika kecurangan berlapis ini tidak ditekan di fase pre-payment menggunakan sistem pendeteksi cerdas yang mampu membedah pola non-linear secara seketika (real-time), kebocoran anggaran JKN akan menggerus keberlanjutan jaminan kesehatan nasional bagi ratusan juta rakyat Indonesia.')
     
     # Bagian 3
     doc.add_heading('Bagian 3: Solusi & Keunggulan', level=1)

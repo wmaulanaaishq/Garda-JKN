@@ -13,10 +13,13 @@ Tidak seperti sistem deteksi *fraud* tradisional yang berupa "Blackbox AI", GARD
 
 ## Bagian 2: Masalah & Urgensi
 **Spesifisitas Masalah:**
-Kebocoran dana Program JKN yang disebabkan oleh inefisiensi dan klaim fiktif di fasilitas kesehatan (seperti *upcoding* tingkat *severity* dan klaim durasi rawat yang dimanipulasi).
+Kebocoran dana Program JKN akibat *fraud* sistemik di Fasilitas Kesehatan Tingkat Lanjut (FKRTL). Modus utama mencakup **Upcoding** (manipulasi tingkat *severity* INA-CBG agar tarif lebih mahal), **Phantom Billing** (klaim pasien/tindakan fiktif), dan **Readmisi** (pemecahan episode rawat inap).
 
 **Dukungan Data & Urgensi:**
-Di lapangan, verifikator medis BPJS kewalahan dengan jutaan baris klaim yang harus diperiksa secara manual setiap bulannya. Sistem *rule-based* konvensional seringkali tertipu oleh pola *fraud* baru yang dinamis. Jika *fraud* ini tidak ditekan menggunakan sistem pendeteksi cerdas yang dapat membaca pola non-linear, defisit anggaran JKN akan terus membesar yang berujung pada terganggunya kualitas layanan bagi seluruh rakyat Indonesia.
+- **Kerugian Finansial:** Berdasarkan tinjauan KPK dan Kementerian Kesehatan (2024), estimasi kebocoran dana JKN mencapai 5-10% dari total beban klaim, atau setara dengan **Rp10 hingga Rp15 Triliun per tahun**. Terbaru, pada Juli 2024, KPK mengonfirmasi temuan *Phantom Billing* senilai Rp35 Miliar hanya dari 3 rumah sakit sebagai fenomena "puncak gunung es".
+- **Beban Kerja Ekstrem (Fatigue):** Pada tahun 2023, layanan JKN menyentuh 606,7 juta kunjungan. Verifikator medis BPJS Kesehatan dihadapkan pada **8 hingga 12 juta klaim FKRTL per bulan**. Dengan rasio ribuan klaim per verifikator dan batas waktu pencairan SLA (15 hari), verifikasi manual sangat rentan *human error* dan mustahil meneliti seluruh rekam medis pasien 100%.
+
+Jika kecurangan berlapis ini tidak ditekan di fase *pre-payment* menggunakan sistem pendeteksi cerdas yang mampu membedah pola non-linear secara seketika (*real-time*), kebocoran anggaran JKN akan menggerus keberlanjutan jaminan kesehatan nasional bagi ratusan juta rakyat Indonesia.
 
 ---
 
