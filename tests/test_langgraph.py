@@ -210,7 +210,7 @@ class TestGardaMultiAgentAdjudication(unittest.TestCase):
         """Test Scenario 4: Batch Simulation with records from sample_vclaim_simulation.json."""
         print("\n--- [Scenario 4] Uji Simulasi Batch: Sampel V-Claim Nasional (artifacts/sample_vclaim_simulation.json) ---")
         dataset_path = os.path.join(
-            os.path.dirname(__file__), "artifacts", "sample_vclaim_simulation.json"
+            os.path.dirname(__file__), "..", "artifacts", "sample_vclaim_simulation.json"
         )
         self.assertTrue(os.path.exists(dataset_path), f"File {dataset_path} wajib tersedia.")
 

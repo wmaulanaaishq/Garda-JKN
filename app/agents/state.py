@@ -20,6 +20,7 @@ class ClaimState(TypedDict, total=False):
     patient_data: Dict[str, Any]          # Alias for backward compatibility
     clinical_data: Dict[str, Any]         # Alias for backward compatibility
     billing_data: Dict[str, Any]          # Alias for backward compatibility
+    security_flags: List[str]             # Security Guardrail output
 
     # 2. Lapis 1: Machine Learning Engine (XGBoost + SHAP)
     ml_risk_score: float

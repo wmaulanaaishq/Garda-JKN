@@ -98,6 +98,44 @@ def intake_node(state: ClaimState) -> Dict[str, Any]:
     }
 
 
+def security_guardrail_node(state: ClaimState) -> Dict[str, Any]:
+    """Node 1.5: Security Guardrail (Prompt Injection Defense).
+    
+    Inspects clinical text inputs for malicious prompt injection / jailbreak attempts.
+    If detected, raises security_flags and forces the workflow to END immediately.
+    """
+    claim_data = state.get("claim_data", {})
+    security_flags = []
+    
+    # Common prompt injection signatures
+    malicious_patterns = [
+        r"(?i)\bignore\s+(all\s+)?(previous\s+)?instructions\b",
+        r"(?i)\babaikan\s+(semua\s+)?(instruksi|perintah)\b",
+        r"(?i)\bbypass\s+guardrails\b",
+        r"(?i)\bsystem\s+prompt\b",
+        r"(?i)\byou\s+are\s+now\b",
+    ]
+    
+    text_to_check = f"{claim_data.get('diag_awal', '')} {claim_data.get('catatan_klinis', '')}"
+    
+    for pattern in malicious_patterns:
+        if re.search(pattern, text_to_check):
+            security_flags.append(f"Prompt Injection Attempt Detected: {pattern}")
+            
+    if security_flags:
+        print(f"🚨 SECURITY ALERT: {security_flags}")
+        return {
+            "security_flags": security_flags,
+            "final_status": "ESCALATED",
+            "confidence_score": 0.99,
+            "adjudication_reason": "Klaim dihentikan oleh Security Guardrail karena terdeteksi anomali teks (indikasi Prompt Injection). Segera tinjau secara manual.",
+            "status": "ESCALATED",
+            "is_upcoding_detected": False,
+        }
+        
+    return {"security_flags": []}
+
+
 # =====================================================================
 # Node 2: ML Scoring Agent (Lapis 1 XGBoost + SHAP)
 # =====================================================================
