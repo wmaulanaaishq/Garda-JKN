@@ -4,7 +4,7 @@ import argparse
 from typing import Dict, Any, List
 from dotenv import load_dotenv
 
-from pypdf import PdfReader
+import pymupdf4llm
 from app.core.vector_db import MedicalKnowledgeBase
 
 load_dotenv()
@@ -118,25 +118,22 @@ INA_CBG_RULES: List[Dict[str, Any]] = [
 
 
 def extract_pages_from_pdf(pdf_path: str, max_pages: int = 15) -> List[Dict[str, Any]]:
-    """Extract text from PDF pages with page number tracking."""
-    reader = PdfReader(pdf_path)
-    total_pages = len(reader.pages)
-    
-    pages_to_read = min(total_pages, max_pages)
+    """Extract text and tables from PDF pages using PyMuPDF4LLM for advanced markdown parsing."""
     extracted = []
-    
-    for idx in range(pages_to_read):
-        try:
-            page = reader.pages[idx]
-            txt = page.extract_text() or ""
-            txt_clean = " ".join(txt.split())
-            if len(txt_clean) >= 80:  # Skip blank or low-content pages
+    try:
+        chunks = pymupdf4llm.to_markdown(pdf_path, page_chunks=True)
+        pages_to_read = min(len(chunks), max_pages)
+        
+        for idx in range(pages_to_read):
+            chunk = chunks[idx]
+            txt = chunk.get("text", "")
+            if len(txt.strip()) >= 80:
                 extracted.append({
                     "page_number": idx + 1,
-                    "text": txt_clean,
+                    "text": txt,
                 })
-        except Exception as e:
-            continue
+    except Exception as e:
+        print(f"Failed to parse {pdf_path} with PyMuPDF4LLM: {e}")
             
     return extracted
 
