@@ -24,7 +24,7 @@ Di lapangan, verifikator medis BPJS kewalahan dengan jutaan baris klaim yang har
 **Ide Solusi:**
 Membangun platform verifikasi klaim 3-Lapis (Microservice):
 1. **Lapis 1 (XGBoost + SHAP):** Melakukan *screening* finansial berkecepatan tinggi dalam hitungan milidetik untuk menyoroti *Reason Codes* (alasan anomali).
-2. **Lapis 2 (Qdrant RAG):** Mesin pencarian vektor otomatis yang membandingkan klaim dengan ratusan dokumen resmi Pedoman Nasional Pelayanan Kedokteran (PNPK).
+2. **Lapis 2 (Qdrant RAG):** Mesin pencarian vektor otomatis yang membandingkan klaim dengan ratusan dokumen resmi Pedoman Nasional Pelayanan Kedokteran (PNPK). RAG kami mengimplementasikan "Advanced PDF Parsing" (PyMuPDF4LLM) untuk mengurai tabel bersarang menjadi Markdown agar LLM tidak kehilangan konteks medis.
 3. **Lapis 3 (LLM Agent):** *Clinical Arbiter* yang menyintesis temuan dari Lapis 1 & 2 untuk menerbitkan rekomendasi Berita Acara (APPROVED, DOWNGRADED, ESCALATED).
 
 **Keunggulan Utama:**
@@ -51,6 +51,7 @@ Sistem GARDA-JKN telah melewati fase purwarupa dan kini berada di tahap MVP fung
 1. **Apa yang Sudah Berfungsi:**
    - **Backend (FastAPI & LangGraph):** Pipeline AI Lapis 1 (XGBoost) dan Lapis 3 (LLM) sudah selesai dilatih dan berjalan penuh merespons *request* dari sisi *client*.
    - **Frontend (Next.js):** Antarmuka visual (menyerupai SIMRS VClaim) sudah *live* dan dapat diakses. Fitur interaksi manusia (HITL) untuk *approve/reject* klaim yang ambigu (*ESCALATED*) sudah berjalan penuh.
+   - **RAG (*Retrieval-Augmented Generation*):** Unit Test penarikan dokumen berhasil meraih skor 100% (Lulus Uji) dalam menemukan pedoman tata laksana klinis spesifik seperti Stroke rTPA, STEMI PCI, Ulkus Diabetes, dan deteksi Upcoding Severity Level III.
 
 2. **Lokasi Pengujian & Validasi (Hypothesis & Design):**
    - Diuji secara tertutup (*Closed Research Environment*) menggunakan **Data Sampel Resmi BPJS Kesehatan Tahun 2024** (Tabel FKRTL dan Diagnosis Sekunder).
