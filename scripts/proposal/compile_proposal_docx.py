@@ -64,6 +64,12 @@ def create_docx():
         doc.add_picture('docs/evidence/plot_ai_evaluation.png', width=Inches(5))
         last_paragraph = doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        
+    doc.add_paragraph('Sebagai bukti MVP telah terintegrasi End-to-End, berikut adalah antarmuka VClaim Mockup UI (Next.js) yang menampilkan hasil adjudikasi klaim oleh AI Lapis 1 & 3:')
+    if os.path.exists('docs/evidence/plot_ui_frontend.png'):
+        doc.add_picture('docs/evidence/plot_ui_frontend.png', width=Inches(5))
+        last_paragraph = doc.paragraphs[-1]
+        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     # Bagian 6
     doc.add_heading('Bagian 6: Rencana & Model Bisnis (VHDIC Canvas)', level=1)
