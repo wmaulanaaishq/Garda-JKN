@@ -99,8 +99,9 @@ def create_docx():
     # Bagian 8
     doc.add_heading('Bagian 8: Risiko, Privasi & Etika', level=1)
     doc.add_paragraph('1. Kepatuhan Undang-Undang PDP (Pelindungan Data Pribadi):\nSistem mengimplementasikan Zero-Knowledge Privacy Masking. Modul Intake Agent di awal secara otomatis menyamarkan (masking) identitas seperti NIK, Nama Pasien, dan Alamat sebelum data tersebut dikirimkan ke cloud LLM.\n'
-                      '2. Mitigasi Bias Terhadap Faskes Kecil:\nUntuk mencegah model AI "menghukum" RS tipe C/D secara tidak adil akibat volume klaimnya yang berbeda, teknik Stratified Isolation Forest yang kami gunakan melakukan klasterisasi ketat sesuai kelas rumah sakit sebelum menetapkan baseline fraud.\n'
-                      '3. Superposisi Manusia (Human-in-the-Loop):\nMesin tidak akan pernah secara sepihak membatalkan pembayaran faskes. Klaim yang ditandai merah (Fraudulent) diklasifikasikan sebagai ESCALATED, memberikan wewenang penuh kepada Dokter Verifikator manusia untuk mengetuk palu keputusan terakhir.')
+                      '2. Keamanan Tingkat Enterprise (Prompt Injection Guardrail):\nBerbeda dengan prototipe AI biasa, arsitektur GARDA-JKN telah dibekali dengan modul Security Guardrail Node. Sistem secara cerdas mendeteksi dan memblokir serangan siber berbasis linguistik (seperti percobaan bypass perintah atau jailbreak) sebelum data menyentuh mesin LLM. Ini memastikan stabilitas operasional level nasional.\n'
+                      '3. Mitigasi Bias Terhadap Faskes Kecil:\nUntuk mencegah model AI "menghukum" RS tipe C/D secara tidak adil akibat volume klaimnya yang berbeda, teknik Stratified Isolation Forest yang kami gunakan melakukan klasterisasi ketat sesuai kelas rumah sakit sebelum menetapkan baseline fraud.\n'
+                      '4. Superposisi Manusia (Human-in-the-Loop):\nMesin tidak akan pernah secara sepihak membatalkan pembayaran faskes. Klaim yang ditandai merah (Fraudulent) diklasifikasikan sebagai ESCALATED, memberikan wewenang penuh kepada Dokter Verifikator manusia untuk mengetuk palu keputusan terakhir.')
 
     # Bagian 9
     doc.add_heading('Bagian 9: Profil Tim & Eksekusi', level=1)

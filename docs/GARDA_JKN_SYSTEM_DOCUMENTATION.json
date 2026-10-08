@@ -166,18 +166,21 @@
         ]
       },
       "guardrails_and_safety_matrix": {
-        "title": "Keamanan Data Dasar (MVP Level)",
+        "title": "Matriks Pengamanan Data & Keamanan (Enterprise Level)",
         "scenarios": [
           {
             "threat_vector": "Data Quality Errors (Input string di kolom biaya, format tidak valid)",
             "mitigation_strategy": "Terdapat mekanisme Python Data Quality Check yang menahan laju proses dan langsung menghasilkan status ESCALATED tanpa memanggil LLM (hemat biaya)."
           },
           {
+            "threat_vector": "Prompt Injection / Jailbreak Attempts",
+            "mitigation_strategy": "Diimplementasikan Security Guardrail Node khusus di LangGraph (Node 1.5). Sistem menggunakan analisis Pola Reguler (Regex) untuk mendeteksi perintah anomali seperti 'ignore previous instructions' dan akan langsung menggagalkan klaim sebelum diproses oleh LLM."
+          },
+          {
             "threat_vector": "LLM Failure / Output Malformed JSON",
             "mitigation_strategy": "Terdapat High-Reliability Fallback yang menggunakan regex ketat untuk mengekstrak respons, serta menggunakan string fallback statis ('ESCALATED') apabila LLM mengalami gangguan API."
           }
-        ],
-        "out_of_scope": "Sistem proteksi Prompt Injection Lanjutan (LLM-based Safety Guard) tidak diterapkan di versi MVP ini demi mengurangi ketergantungan pada multiple API calls."
+        ]
       }
     }
   }
