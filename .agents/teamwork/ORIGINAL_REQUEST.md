@@ -71,3 +71,73 @@ Buat fungsi XAI (Explainable AI) yang menerjemahkan skor *TreeSHAP* menjadi "Aud
 - [ ] *Isolation Forest* diimplementasikan dengan logika iterasi/pengelompokan (stratifikasi), bukan sekadar `model.fit()` pada seluruh *dataframe* sekaligus.
 - [ ] Evaluasi akhir menggunakan PR-AUC (Precision-Recall) atau metrik operasional (misal: top-K deteksi), bukan sekadar akurasi / ROC-AUC.
 - [ ] Skrip mendemonstrasikan cetakan *Auditor Reason Codes* ke layar untuk sedikitnya 3 contoh klaim berisiko tinggi.
+
+## 2026-09-28T15:45:06Z
+
+# Teamwork Project Prompt — Draft
+
+> Status: Launched.
+> Goal: Craft prompt → get user approval → delegate to teamwork_preview
+> Requested team: Full-scale agent team for stress-testing and deep bug hunting.
+
+End-to-end comprehensive testing and verification of the GARDA-JKN application, ensuring the Vercel frontend correctly communicates with the Railway FastAPI backend and processes complex JSON claims without errors. Use a very large team of agents.
+
+Working directory: /home/wmaulanaaishq/projects/bpjs_2025
+Integrity mode: demo
+
+## Requirements
+
+### R1. Backend Health and Connectivity
+Verify that the FastAPI backend hosted on Railway is online, active, and accessible from the public internet. Ensure the environment variables (like PORT) are correctly evaluated in the production environment.
+
+### R2. Complex Payload Processing
+Simulate the submission of a complex, edge-case JSON medical claim payload to the `/api/v1/adjudicate` endpoint. Verify that the XGBoost machine learning model and Qdrant Vector DB (RAG) successfully process the request without crashing.
+
+### R3. Frontend Integration & E2E Testing (Playwright)
+Verify that the Next.js frontend is properly configured to point to the Railway backend URL. Perform End-to-End (E2E) testing using Playwright (or Playwright MCP) on the Vercel UI. Simulate a user pasting a JSON payload, clicking the evaluate button, and verifying the results render correctly on the screen without CORS or network errors.
+
+## Acceptance Criteria
+
+### Backend Tests
+- [ ] A programmatic script (e.g., Python `requests` or `pytest`) successfully sends a GET/POST request to the Railway URL and receives an HTTP 200 OK status.
+- [ ] The API responds to the complex JSON payload simulation with a structurally valid JSON response containing `adjudication_result`, `severity_level`, and `confidence_score`.
+
+### Frontend & Logs
+- [ ] A Playwright test script or automation successfully navigates the Vercel frontend, simulates a user interaction (submitting a claim), and asserts that the UI displays the adjudication result correctly.
+- [ ] The Railway deployment logs show no unhandled exceptions or port binding errors during the simulated tests.
+
+
+## 2026-10-07T15:46:16Z
+
+# Teamwork Project Prompt — Draft
+
+> Status: Ready for launch — awaiting user approval
+> Goal: Craft prompt → get user approval → delegate to teamwork_preview
+> Requested team: A small focused team
+
+This is a single self-contained fix; keep it small and focused.
+Tingkatkan pipeline *ingestion* dokumen RAG pada skrip `ingest_pnpk.py` agar dapat mem-parsing tabel bersarang, tata letak kompleks, dan potensi teks dari gambar/diagram alur dari dokumen PDF medis (PNPK), menggunakan layanan API eksternal (seperti LlamaParse atau Unstructured API).
+
+Working directory: /home/wmaulanaaishq/projects/bpjs_2025
+Integrity mode: demo
+
+## Requirements
+
+### R1. Implementasi Advanced PDF Parsing
+Modifikasi `ingest_pnpk.py` (atau buat *script* baru yang sejalan) untuk menggantikan `pypdf` dengan *library* yang terhubung ke API eksternal (misal: `llama-parse` atau *Unstructured API*). Sistem harus mengekstrak struktur dokumen menjadi Markdown (terutama merender tabel sebagai `| tabel | markdown |`). Apabila menggunakan API LlamaParse, minta API Key kepada *user* terlebih dahulu atau muat dari `.env`.
+
+### R2. Skrip Validasi Otomatis (Verifikasi)
+Buat sebuah *script* pengujian terpisah (misal: `test_advanced_parsing.py`) yang memproses 1 halaman spesifik dari salah satu PDF yang kita miliki di folder `Data RAG/` (pilih halaman yang mengandung tabel) dan memverifikasi secara programatik bahwa *output* Markdown yang dihasilkan memuat karakter tabel (seperti `|`).
+
+### R3. Kompatibilitas Vector DB
+Hasil ekstraksi teks/markdown dari *parser* baru harus tetap masuk ke dalam skema struktur `Document` yang digunakan oleh Qdrant pada `app/core/vector_db.py`. 
+
+## Acceptance Criteria
+
+### Pengujian Fungsi Parsing
+- [ ] Menjalankan `python test_advanced_parsing.py` menghasilkan *exit code 0*.
+- [ ] *Output log* dari pengujian menampilkan teks berformat tabel Markdown (terdapat karakter pipa `|` dan tanda *header* `---`) dari dokumen PDF aslinya.
+- [ ] Menjalankan `python ingest_pnpk.py` berhasil menyelesaikan seluruh proses tanpa *error*, menggunakan metode ekstraksi yang baru.
+
+---
+*Next: when approved → delegate via invoke_subagent (see Delegation Protocol)*

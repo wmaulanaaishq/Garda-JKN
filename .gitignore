@@ -31,3 +31,7 @@ Thumbs.db
 .agents/
 .deepeval/
 .gemini/
+
+# Local BPJS reviewer queue and generated evaluation reports
+evaluation/reviewer_data/
+evaluation/results/

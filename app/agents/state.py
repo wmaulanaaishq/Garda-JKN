@@ -33,10 +33,11 @@ class ClaimState(TypedDict, total=False):
     rag_references: List[Dict[str, Any]]
 
     # 4. Lapis 3: Validator Agent ("Pengecek")
-    validation_status: str                # "CLEAR", "DISCREPANCY_DETECTED", "AMBIGUOUS"
+    validation_status: str                # "CLEAR", "DISCREPANCY_DETECTED", "AMBIGUOUS", "DATA_QUALITY_ERROR"
     preliminary_verdict: str              # "APPROVE_RECOMMENDED", "DOWNGRADE_RECOMMENDED", "ESCALATE_RECOMMENDED"
     clinical_inconsistencies: List[str]
     medical_validation_notes: str
+    data_quality_flags: List[str]
 
     # 5. Lapis 4: Executor Agent ("Pengeksekusi" - LLM Arbiter)
     final_status: str                     # MANDATORY: "APPROVED" | "DOWNGRADED" | "ESCALATED"

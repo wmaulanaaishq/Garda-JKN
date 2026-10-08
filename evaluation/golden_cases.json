@@ -1,0 +1,63 @@
+[
+  {
+    "id": "case_approved_pneumonia",
+    "label": "VALID",
+    "expected_decision": "APPROVED",
+    "expected_severity": 3,
+    "claim": {
+      "id_kunjungan": "EVAL-001",
+      "nama_pasien": "Synthetic Patient A",
+      "nik": "0000000000000000",
+      "usia": 55,
+      "diag_awal": "Pneumonia Berat",
+      "diag_sekunder_1": "Gagal Napas",
+      "tindakan_1": "Pemasangan Ventilator",
+      "icu_days": 6,
+      "severity_level": 3,
+      "biaya_tagih": 28000000,
+      "durasi_rawat": 12
+    },
+    "evidence_topics": ["pneumonia", "ventilator", "severity level"]
+  },
+  {
+    "id": "case_downgrade_aki",
+    "label": "CODING_ERROR",
+    "expected_decision": "DOWNGRADED",
+    "expected_severity": 2,
+    "claim": {
+      "id_kunjungan": "EVAL-002",
+      "nama_pasien": "Synthetic Patient B",
+      "nik": "0000000000000000",
+      "usia": 68,
+      "diag_awal": "Stroke Iskemik Akut",
+      "diag_sekunder_1": "Gagal Ginjal Akut",
+      "tindakan_1": "CT Scan Kepala",
+      "icu_days": 0,
+      "severity_level": 3,
+      "biaya_tagih": 18500000,
+      "durasi_rawat": 3,
+      "kreatinin": 1.0
+    },
+    "evidence_topics": ["stroke", "AKI", "KDIGO", "creatinine"]
+  },
+  {
+    "id": "case_escalated_missing_evidence",
+    "label": "AMBIGUOUS",
+    "expected_decision": "ESCALATED",
+    "expected_severity": 3,
+    "claim": {
+      "id_kunjungan": "EVAL-003",
+      "nama_pasien": "Synthetic Patient C",
+      "nik": "0000000000000000",
+      "usia": 47,
+      "diag_awal": "Demam",
+      "diag_sekunder_1": "Komplikasi Tidak Spesifik",
+      "tindakan_1": "Hemodialisis",
+      "icu_days": 0,
+      "severity_level": 3,
+      "biaya_tagih": 150000000,
+      "durasi_rawat": 1
+    },
+    "evidence_topics": ["hemodialysis", "medical necessity", "supporting evidence"]
+  }
+]

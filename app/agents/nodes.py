@@ -204,8 +204,44 @@ def validator_node(state: ClaimState) -> Dict[str, Any]:
 
     discrepancies: List[str] = []
     notes: List[str] = []
+    data_quality_flags: List[str] = []
     verdict = "APPROVE_RECOMMENDED"
     revised_severity: Optional[int] = None
+
+    # Plausibility gate for unit/digit-entry errors. This is not a fraud finding:
+    # it prevents an implausible amount from being auto-approved silently.
+    try:
+        billed_amount = float(claim_data.get("biaya_tagih", 0) or 0)
+    except (TypeError, ValueError):
+        billed_amount = 0.0
+    try:
+        length_of_stay = float(claim_data.get("durasi_rawat", 0) or 0)
+    except (TypeError, ValueError):
+        length_of_stay = 0.0
+    try:
+        icu_days = float(claim_data.get("icu_days", 0) or 0)
+    except (TypeError, ValueError):
+        icu_days = 0.0
+
+    cost_per_day = billed_amount / max(length_of_stay, 1.0)
+    high_complexity = severity_level >= 2 or icu_days > 0 or "ventilator" in tindakan
+    if billed_amount <= 0:
+        data_quality_flags.append("BIAYA_TAGIH kosong atau tidak valid.")
+    elif high_complexity and billed_amount < 500_000:
+        data_quality_flags.append(
+            f"BIAYA_TAGIH Rp {billed_amount:,.0f} terlalu rendah untuk klaim severity/ICU/prosedur kompleks; "
+            "kemungkinan digit atau satuan biaya belum lengkap."
+        )
+    elif length_of_stay >= 3 and cost_per_day < 25_000:
+        data_quality_flags.append(
+            f"BIAYA_PER_HARI hanya Rp {cost_per_day:,.0f} untuk LOS {length_of_stay:g} hari; "
+            "konfirmasi digit dan satuan biaya diperlukan."
+        )
+
+    if data_quality_flags:
+        discrepancies.extend(data_quality_flags)
+        notes.append("Data quality gate aktif: klaim tidak boleh di-approve otomatis sebelum biaya dikonfirmasi.")
+        verdict = "ESCALATE_RECOMMENDED"
 
     # Check 1: Stroke Iskemik + Komorbiditas AKI (KDIGO Laboratory Check)
     is_stroke = "stroke" in diag_awal or "i63" in diag_awal or "i61" in diag_awal
@@ -318,7 +354,7 @@ def validator_node(state: ClaimState) -> Dict[str, Any]:
     if discrepancies and verdict == "DOWNGRADE_RECOMMENDED":
         validation_status = "DISCREPANCY_DETECTED"
     elif discrepancies and verdict == "ESCALATE_RECOMMENDED":
-        validation_status = "AMBIGUOUS"
+        validation_status = "DATA_QUALITY_ERROR" if data_quality_flags else "AMBIGUOUS"
     elif verdict == "APPROVE_RECOMMENDED":
         validation_status = "CLEAR"
     else:
@@ -331,6 +367,7 @@ def validator_node(state: ClaimState) -> Dict[str, Any]:
         "preliminary_verdict": verdict,
         "clinical_inconsistencies": discrepancies,
         "medical_validation_notes": validation_notes_str,
+        "data_quality_flags": data_quality_flags,
         "revised_severity_level": revised_severity,
     }
 
@@ -354,6 +391,7 @@ def executor_node(state: ClaimState) -> Dict[str, Any]:
     validation_status = state.get("validation_status", "CLEAR")
     preliminary_verdict = state.get("preliminary_verdict", "APPROVE_RECOMMENDED")
     clinical_inconsistencies = state.get("clinical_inconsistencies", [])
+    data_quality_flags = state.get("data_quality_flags", [])
     medical_validation_notes = state.get("medical_validation_notes", "")
     revised_severity = state.get("revised_severity_level")
 
@@ -383,6 +421,7 @@ TEMUAN LAPIS 3 (Validator Agent "Pengecek"):
 - Rekomendasi Validator: {preliminary_verdict}
 - Inkonsistensi Klinis: {json.dumps(clinical_inconsistencies, ensure_ascii=False)}
 - Catatan Telaah Medis: {medical_validation_notes}
+- Data Quality Flags: {json.dumps(data_quality_flags, ensure_ascii=False)}
 - Revisi Severity Level: {revised_severity}
 
 INSTRUKSI KEPUTUSAN:
@@ -459,6 +498,20 @@ FORMAT OUTPUT: Keluarkan HANYA satu blok JSON murni tanpa pembungkus markdown (t
 
     except Exception as e:
         print(f"Warning: Executor LLM invocation encountered an issue ({e}). Engaging deterministic clinical synthesis.")
+
+    if data_quality_flags:
+        final_status = "ESCALATED"
+        confidence_score = 0.99
+        adjudication_reason = (
+            f"Klaim {claim_id} belum dapat disetujui otomatis karena ditemukan masalah kualitas data biaya: "
+            f"{' '.join(data_quality_flags)} Mohon verifikator mengonfirmasi nominal, satuan mata uang, dan kelengkapan digit "
+            "sebelum klaim diproses lebih lanjut. Temuan ini merupakan data-quality hold dan bukan kesimpulan fraud."
+        )
+        audit_trail = {
+            **audit_trail,
+            "clinical_inconsistency": "; ".join(data_quality_flags),
+            "action_recommendation": "ESCALATED untuk konfirmasi biaya dan perbaikan data klaim.",
+        }
 
     # High-Reliability Fallback / Post-Processing to guarantee valid formal output
     if not adjudication_reason or len(adjudication_reason) < 50:

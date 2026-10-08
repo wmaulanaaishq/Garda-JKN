@@ -1,9 +1,15 @@
-from fastapi import FastAPI, HTTPException
+import json
+import os
+
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, ConfigDict
-from typing import Optional, List
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Any, Dict, Optional, List
 # Import the GARDA-JKN LangGraph agent
 from app.agents.workflow import garda_app
+from app.agents.trace import evaluation_detail_from_state, iter_workflow_events
+from app.core.rag_ingest import ingest_uploaded_document, list_ingested_documents
 
 
 # --- Models ---
@@ -40,9 +46,11 @@ class EvaluationDetail(BaseModel):
     confidence_score: float
     ml_risk_score: float
     is_anomalous: bool
-    reason_codes: List[str] = []
+    reason_codes: List[str] = Field(default_factory=list)
+    data_quality_flags: List[str] = Field(default_factory=list)
     adjudication_reason: str = ""
     rag_context: str = ""
+    audit_trail: dict = Field(default_factory=dict)
 
 
 class EvaluationResponse(BaseModel):
@@ -59,11 +67,20 @@ class EvaluationResponse(BaseModel):
 # --- Application Setup ---
 app = FastAPI(title="GARDA-JKN Evaluator API", description="AI Adjudicator for BPJS Claims")
 
-# Enable CORS for the React frontend
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:3000,http://127.0.0.1:3000,https://garda-jkn.vercel.app",
+    ).split(",")
+    if origin.strip()
+]
+
+# Keep CORS explicit because claims contain personal and clinical data.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all for hackathon; restrict to frontend domain in prod
-    allow_credentials=False,
+    allow_origins=cors_origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -79,6 +96,35 @@ def health_check():
     return {"status": "healthy", "service": "GARDA-JKN API"}
 
 
+def _evaluation_response(claim_dict: Dict[str, Any], final_state: Dict[str, Any]) -> Dict[str, Any]:
+    detail = evaluation_detail_from_state(final_state, claim_dict)
+    decision = detail["decision"]
+    return {
+        "success": True,
+        "metadata": {"code": 200, "message": "Evaluasi Selesai"},
+        "response": detail,
+        "adjudication_result": decision,
+        "severity_level": detail["severity_level"],
+        "confidence_score": detail["confidence_score"],
+    }
+
+
+@app.post("/api/v1/adjudicate/stream")
+def adjudicate_stream(claim: ClaimData):
+    """Stream safe workflow progress events for the reviewer console."""
+    claim_dict = claim.model_dump()
+
+    def events():
+        for event in iter_workflow_events(claim_dict):
+            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(
+        events(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
 @app.post("/api/v1/adjudicate", response_model=EvaluationResponse)
 def adjudicate_claim(claim: ClaimData):
     try:
@@ -89,45 +135,40 @@ def adjudicate_claim(claim: ClaimData):
         initial_state = {"claim_data": claim_dict}
         final_state = garda_app.invoke(initial_state)
 
-        # Extract adjudication outcomes
-        decision = final_state.get("final_status", "UNKNOWN")
-        raw_sev = final_state.get("revised_severity_level") or claim_dict.get("severity_level", 1)
-        try:
-            severity = int(raw_sev)
-        except (ValueError, TypeError):
-            severity = 1
-        confidence = float(final_state.get("confidence_score", 0.95))
-        ml_risk = float(final_state.get("ml_risk_score", 0.0))
-        is_anom = bool(final_state.get("is_anomalous", False))
-        ml_explanation = final_state.get("ml_explanation", "")
-        reason_codes = [ml_explanation] if ml_explanation else []
-        adj_reason = final_state.get("adjudication_reason", "")
-        rag_ctx = final_state.get("rag_context", "")
-
-        response_detail = {
-            "decision": decision,
-            "adjudication_result": decision,
-            "severity_level": severity,
-            "confidence_score": confidence,
-            "ml_risk_score": ml_risk,
-            "is_anomalous": is_anom,
-            "reason_codes": reason_codes,
-            "adjudication_reason": adj_reason,
-            "rag_context": rag_ctx
-        }
-
-        # Build response to match both frontend (response.response.decision)
-        # and acceptance criteria (adjudication_result, severity_level, confidence_score)
-        return {
-            "success": True,
-            "metadata": {
-                "code": 200,
-                "message": "Evaluasi Selesai"
-            },
-            "response": response_detail,
-            "adjudication_result": decision,
-            "severity_level": severity,
-            "confidence_score": confidence
-        }
+        return _evaluation_response(claim_dict, final_state)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/v1/rag/documents")
+def rag_documents():
+    """List local RAG manifest metadata without returning document contents."""
+    return {"documents": list_ingested_documents()}
+
+
+@app.post("/api/v1/rag/documents")
+async def upload_rag_document(
+    file: UploadFile = File(...),
+    authority: str = Form(...),
+    effective_date: str = Form(...),
+    disease: str = Form(""),
+    icd10: str = Form(""),
+    rule_type: str = Form(""),
+):
+    """Upload and index one local medical reference document."""
+    try:
+        content = await file.read()
+        record = ingest_uploaded_document(
+            content,
+            file.filename or "document",
+            authority=authority,
+            effective_date=effective_date,
+            disease=disease,
+            icd10=icd10,
+            rule_type=rule_type,
+        )
+        return {"success": True, "document": record}
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail="RAG ingestion failed") from exc
