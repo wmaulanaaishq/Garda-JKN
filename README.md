@@ -1,4 +1,4 @@
-# 🛡️ GARDA-JKN (Generative Agent for Risk Detection and Adjudication)
+# GARDA-JKN (Generative Agent for Risk Detection and Adjudication)
 
 ![Next.js](https://img.shields.io/badge/Frontend-Next.js-black)
 ![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688)
