@@ -12,11 +12,29 @@ def create_docx():
     
     # Bagian 1
     doc.add_heading('Bagian 1: Identitas & Positioning', level=1)
-    doc.add_paragraph('Nama Solusi: GARDA-JKN (Generative Agent for Risk Detection and Adjudication)\n'
-                      'Tagline: Mesin Penalaran Klinis untuk Adjudikasi Klaim BPJS yang Cerdas, Transparan, dan Terpercaya.\n'
-                      'Kategori Utama: Efisiensi Risiko pada Fasilitas Kesehatan\n'
-                      'Sub-Kategori Fokus: Manipulasi diagnosis/tindakan (Upcoding), Phantom Billing, dan Readmisi.')
-    doc.add_paragraph('Positioning Unik:\nTidak seperti sistem deteksi fraud tradisional yang berupa "Blackbox AI", GARDA-JKN mengombinasikan Explainable AI (XGBoost + SHAP) dengan kecerdasan generatif LLM (LangGraph & RAG) untuk tidak hanya mendeteksi anomali finansial, tetapi juga memberikan alasan klinis berstandar medis (PNPK), sekaligus menempatkan manusia sebagai penentu akhir (Human-in-the-Loop).')
+    doc.add_paragraph('A. Identitas Solusi & Tagline\n'
+                      '• Nama Solusi: GARDA-JKN (Generative Agent for Risk Detection and Adjudication)\n'
+                      '• Tagline: Detect Smarter, Protect JKN: Mesin Penalaran Klinis Berbasis Agentic AI untuk Adjudikasi Klaim Pra-Pembayaran yang Cerdas, Transparan, dan Berkeadilan.\n'
+                      '• Nilai Utama (Core Value): Mentransformasi verifikasi klaim BPJS Kesehatan dari pengawasan klerikal pasca-bayar (post-payment) menjadi adjudikasi cerdas pra-pembayaran (pre-payment) berbasis penalaran medis berstandar Pedoman Nasional Pelayanan Kedokteran (PNPK Kemenkes RI).')
+    
+    doc.add_paragraph('B. Kategori & Sub-Kategori Tantangan\n'
+                      '• Kategori Utama: Efisiensi Risiko pada Fasilitas Kesehatan (FKRTL)\n'
+                      '• Sub-Kategori Fokus:\n'
+                      '  1. Upcoding & Unbundling: Manipulasi tingkat keparahan diagnosis (severity level I/II/III) dan pemecahan paket layanan INA-CBG yang tidak sesuai indikasi klinis.\n'
+                      '  2. Phantom & Repeat Billing: Pengajuan klaim fiktif atas tindakan/layanan yang tidak pernah diberikan atau klaim berulang pada episode rawat yang sama.\n'
+                      '  3. Prolonged Stay & Readmisi Berulang: Perpanjangan lama rawat inap (LOS) tanpa justifikasi medis serta pemulangan dini yang disengaja untuk klaim berulang.')
+    
+    doc.add_paragraph('C. Positioning Strategis & Diferensiasi Unik\n'
+                      'Di tengah keterbatasan sistem deteksi kecurangan saat ini, GARDA-JKN mendefinisikan ulang lanskap adjudikasi klaim melalui tiga pilar positioning pembeda:\n'
+                      '1. Bukan Sekadar Heuristik Statis (Rule-Based Biasa): Sistem aturan statis konvensional sangat kaku dan rentan dimanipulasi (gaming the system). GARDA-JKN menggabungkan Machine Learning adaptif (Stratified Isolation Forest & XGBoost) yang mampu membedah anomali non-linear lintas 14 strata fasilitas kesehatan tanpa bias ukuran rumah sakit.\n'
+                      '2. Bukan "Black-Box AI" yang Memicu Friksi: Mayoritas sistem AI ditolak oleh faskes karena hanya mengeluarkan skor probabilitas tanpa alasan medis yang jelas. GARDA-JKN menghadirkan Explainable AI berbasis Agentic RAG yang memvalidasi setiap temuan dengan rujukan eksak bab, tabel, dan halaman dari PNPK Kemenkes secara otomatis.\n'
+                      '3. Arsitektur Pra-Pembayaran Nir-Friksi (Zero-Disruption Middleware): Beroperasi sebagai middleware cerdas yang terhubung langsung ke Web Service V-Claim BPJS Kesehatan, menyelesaikan adjudikasi dalam hitungan detik tanpa merombak sistem eksisting, sekaligus menjamin kendali hukum tetap berada di tangan Dokter Verifikator (Human-in-the-Loop).')
+    
+    doc.add_paragraph('D. Identitas Tim Pengusul & Sinergi Multidisiplin\n'
+                      'GARDA-JKN diusung oleh tim lintas disiplin yang memadukan keahlian rekayasa kecerdasan artifisial, arsitektur perangkat lunak skala enterprise, dan kepakaran domain klinis:\n'
+                      '• Lead AI & Machine Learning Engineer: Mengembangkan model deteksi anomali (Stratified Isolation Forest, XGBoost), arsitektur basis data vektor Qdrant, dan orkestrasi penalaran agen LLM (LangGraph).\n'
+                      '• Fullstack & Health Systems Integration Engineer: Mengarsitekturi microservice pre-payment middleware (FastAPI), integrasi bridging API V-Claim BPJS Kesehatan, dan antarmuka dasbor verifikator responsif.\n'
+                      '• Clinical Data & Health Domain Specialist: Memformulasikan Fraud Control Matrix, kurasi ontologi medis PNPK Kemenkes, validasi korelasi diagnosis komorbiditas INA-CBG, serta penjaminan mutu anti-halusinasi medis (DeepEval).')
     
     # Bagian 2
     doc.add_heading('Bagian 2: Masalah & Urgensi', level=1)
