@@ -37,6 +37,17 @@ def create_docx():
         doc.add_picture('docs/evidence/plot_workflow_system.png', width=Inches(4.8))
         last_paragraph = doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    doc.add_heading('Mekanisme Integrasi ke Ekosistem V-Claim BPJS (Pre-Payment Middleware)', level=2)
+    doc.add_paragraph(
+        'Agar implementasi di lapangan tidak menimbulkan friksi operasional maupun penolakan dari pihak faskes dan internal BPJS, GARDA-JKN dirancang mengadopsi prinsip "Zero-Disruption Integration". Sistem ini tidak menggantikan aplikasi V-Claim eksisting, melainkan berfungsi sebagai Intelligent Middleware (Pintu Gerbang Cerdas Pra-Pembayaran) yang terhubung melalui tiga pilar integrasi teknis:'
+    )
+    doc.add_paragraph('1. Integrasi Web Service Bridging V-Claim (API Interceptor):\n'
+                      'GARDA-JKN terhubung langsung ke antrean data Web Service (WS) Bridging resmi BPJS Kesehatan yang sudah digunakan oleh ribuan SIMRS di seluruh Indonesia. Komunikasi data berlangsung menggunakan protokol RESTful JSON dengan standar autentikasi resmi BPJS (Header HMAC-SHA256, Consumer ID, Secret Key, dan enkripsi payload AES-256). Saat faskes menekan tombol "Kirim Klaim", payload secara otomatis disaring terlebih dahulu oleh GARDA-JKN. Klaim wajar (Inlier) langsung diteruskan untuk Auto-Approval pencairan dana (<100 milidetik).')
+    doc.add_paragraph('2. Embedded AI Review Panel di Antarmuka Verifikator V-Claim:\n'
+                      'Bagi klaim yang memerlukan intervensi manusia (status ESCALATED), dokter verifikator BPJS tidak perlu membuka peramban atau sistem terpisah. Melalui integrasi Webhook dan Micro-Frontend Extension, panel samping (side-panel) GARDA-JKN akan otomatis muncul di dalam antarmuka V-Claim yang sedang dibuka petugas. Panel ini menyajikan transparansi skor SHAP, kutipan pasal PNPK Kemenkes otentik dari Qdrant RAG, serta draf Berita Acara yang siap diketuk palu melalui tombol tindakan hukum (Setujui / Downgrade / Tolak).')
+    doc.add_paragraph('3. Interoperabilitas Data Klinis Elektronik (SatuSehat & HL7 FHIR):\n'
+                      'Untuk kebutuhan audit pembuktian medis autentik (misal: verifikasi hasil laboratorium kreatinin/troponin atau rekam EKG guna menangkal phantom billing), GARDA-JKN siap menarik berkas Rekam Medis Elektronik (RME) melalui integrasi Platform SatuSehat Kemenkes RI berstandar HL7 FHIR (Fast Healthcare Interoperability Resources) pada resource Observation dan DiagnosticReport.')
     
     # Bagian 4
     doc.add_heading('Bagian 4: Pendekatan Teknis & Data (Visualisasi)', level=1)
