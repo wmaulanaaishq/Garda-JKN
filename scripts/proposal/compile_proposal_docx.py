@@ -46,17 +46,51 @@ def create_docx():
     
     # Bagian 3
     doc.add_heading('Bagian 3: Solusi, Keunggulan & Arsitektur', level=1)
-    doc.add_paragraph('Ide Solusi:\nMembangun platform verifikasi klaim 3-Lapis (Microservice) yang revolusioner:\n'
-                      '1. Lapis 1 (XGBoost + SHAP): Melakukan screening finansial berkecepatan tinggi dalam hitungan milidetik. Model ini menggunakan Stratified Isolation Forest dengan 14 primary strata, 12 Base CBG fallbacks, dan 18 CMG fallbacks untuk menghindari bias ukuran rumah sakit.\n'
-                      '2. Lapis 2 (Qdrant RAG - Advanced PDF Parsing): Mesin pencarian vektor medis otomatis. Mengatasi kelemahan RAG standar, sistem kami menggunakan PyMuPDF4LLM untuk mem-parsing Pedoman Nasional Pelayanan Kedokteran (PNPK). Teknologi ini berhasil mengekstrak "Tabel Bersarang" dan "Flowchart Medis" ke dalam format Markdown murni, menjaga konteks relasional medis yang vital agar tidak hilang.\n'
-                      '3. Lapis 3 (LLM Agent - LangGraph): Clinical Arbiter (DeepSeek-Chat) yang menyintesis temuan dari Lapis 1 & 2. Sesuai dengan "Fraud Control Matrix" kami, sistem ini dapat membedakan indikasi heuristik (finansial gap) dengan bukti otentik (aturan PNPK) untuk menerbitkan rekomendasi Berita Acara yang definitif.')
-    doc.add_paragraph('Alur Workflow Sistem:\nKlaim RS Masuk -> Lapis 1 (Financial Screening) -> Jika skor risiko tinggi, klaim dilempar ke Lapis 2 (Qdrant mencari dokumen medis relevan) -> Konteks digabung ke Lapis 3 (LLM Arbiter) -> LLM mengeluarkan Keputusan (Auto-Approve / Downgrade / Escalate). Jika statusnya "Escalate", maka akan diserahkan ke Dasbor Manusia (Human-in-the-Loop).')
+    
+    doc.add_heading('A. Konsep Solusi: Platform Adjudikasi 3-Lapis (Tri-Layer AI System)', level=2)
+    doc.add_paragraph(
+        'Menjawab tantangan kecurangan sistemik tanpa menimbulkan resistensi faskes, GARDA-JKN tidak sekadar menggunakan satu model "Blackbox AI", melainkan memecah proses adjudikasi ke dalam tiga simpul spesifik yang saling memvalidasi (End-to-End AI System):'
+    )
+    doc.add_paragraph(
+        '1. Lapis 1 (XGBoost + SHAP): High-Speed Financial Screening\n'
+        'Melakukan penapisan (screening) finansial berkecepatan tinggi dalam hitungan milidetik. Model ini menggunakan Stratified Isolation Forest dengan 14 primary strata, 12 Base CBG fallbacks, dan 18 CMG fallbacks. Keunggulannya: model tidak bias terhadap volume klaim rumah sakit tipe kecil (Kelas C/D/Daerah 3T). Interpretasi fitur disediakan oleh algoritma SHAP (Explainable AI) untuk menerjemahkan matriks angka menjadi Auditor Reason Codes yang transparan dan mudah dipahami oleh verifikator.'
+    )
+    doc.add_paragraph(
+        '2. Lapis 2 (Qdrant RAG Advanced PDF Parsing): Medical Vector Search\n'
+        'Bertindak sebagai mesin pencari rekam medis dan hukum otomatis. Mengatasi kelemahan Retrieval-Augmented Generation (RAG) standar yang kerap merusak struktur dokumen rumit, sistem kami menggunakan PyMuPDF4LLM untuk mem-parsing Pedoman Nasional Pelayanan Kedokteran (PNPK). Teknologi ini sukses mengekstrak "Tabel Bersarang" (seperti dosis obat dan kriteria terapi) serta "Flowchart Medis" ke dalam format Markdown murni, menjaga konteks relasional klinis yang sangat vital agar tidak hancur saat diumpankan ke AI.'
+    )
+    doc.add_paragraph(
+        '3. Lapis 3 (LLM Agent - LangGraph): The Clinical Arbiter\n'
+        'Agen penalaran klinis yang menggunakan model mutakhir (DeepSeek-Chat). Agen ini bertugas menyintesis temuan finansial dari Lapis 1 dan bukti teks pedoman (PNPK) dari Lapis 2. Sesuai dengan "Fraud Control Matrix", agen ini membedakan secara logis mana yang merupakan "indikasi heuristik" (gap biaya) dan mana yang "bukti otentik" (pelanggaran PNPK) untuk menerbitkan draf rekomendasi Berita Acara yang definitif dan berdasar hukum.'
+    )
+
+    doc.add_heading('B. Alur Workflow Sistem Deterministik (LangGraph StateGraph)', level=2)
+    doc.add_paragraph(
+        'Alur kerja operasional GARDA-JKN dikelola secara terstruktur oleh LangGraph StateGraph guna memastikan eksekusi yang sepenuhnya deterministik tanpa risiko siklus tak berujung (infinite loop). Setiap berkas klaim melewati 5 simpul terkoordinasi:'
+    )
+    doc.add_paragraph(
+        '• Intake & Security Node: Saat klaim RS masuk, sistem langsung mengeksekusi Zero-Knowledge Privacy Masking untuk menyensor PII (Nama Pasien dan NIK). Sistem juga memindai adanya serangan Prompt Injection/Jailbreak pada catatan rekam medis sebelum data diproses lebih lanjut.\n'
+        '• Risk Scoring Node: Lapis 1 mengevaluasi skor anomali finansial secara instan terhadap klaster faskes yang setara.\n'
+        '• Conditional Handoff Router: Jika skor risiko wajar (Inlier), klaim langsung diarahkan ke jalur hijau Auto-Approve (<100 milidetik). Jika terdeteksi anomali mencurigakan (Outlier), berkas secara otomatis diteruskan ke tahap RAG Lapis 2.\n'
+        '• Clinical Arbiter Node: LLM menyintesis konteks regulasi PNPK dan anomali biaya untuk menyusun rekomendasi putusan definitif (Approve, Downgrade Tarif, atau Escalate).\n'
+        '• Human-in-the-Loop Node: Jika putusan berstatus ambigu (ESCALATED), draf Berita Acara otomatis didorong ke dasbor antarmuka VClaim Mockup UI agar Dokter Verifikator manusia dapat mengambil keputusan hukum terakhir (Absolute Human Veto Power).'
+    )
+
     if os.path.exists('docs/evidence/plot_workflow_system.png'):
-        doc.add_picture('docs/evidence/plot_workflow_system.png', width=Inches(4.8))
+        doc.add_picture('docs/evidence/plot_workflow_system.png', width=Inches(5.0))
         last_paragraph = doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    doc.add_heading('Mekanisme Integrasi ke Ekosistem V-Claim BPJS (Pre-Payment Middleware)', level=2)
+    doc.add_heading('C. Keunggulan Utama Dibandingkan Solusi Eksisting', level=2)
+    doc.add_paragraph(
+        'Keunggulan kompetitif GARDA-JKN dibandingkan sistem verifikasi konvensional maupun sistem AI standar berakar pada 4 pilar utama:\n'
+        '1. Explainable Clinical AI (Bukan Blackbox): Memberikan transparansi penalaran berbasis bukti hukum PNPK otentik, bukan sekadar persentase angka tanpa dasar.\n'
+        '2. Algoritma Nir-Bias (Fairness Across Providers): Segmentasi 14 strata faskes menjamin keadilan audit bagi rumah sakit daerah dan faskes tipe C/D.\n'
+        '3. Pencegahan Pra-Pembayaran Real-Time: Menghentikan kebocoran kas di gerbang awal sebelum dana dicairkan, memangkas waktu verifikasi dari 15-25 menit menjadi di bawah 10 detik per klaim.\n'
+        '4. Integrasi Tanpa Friksi (Zero-Disruption Middleware): Terhubung langsung ke V-Claim BPJS via RESTful API Bridging tanpa mengharuskan penggantian SIMRS di faskes.'
+    )
+
+    doc.add_heading('D. Mekanisme Integrasi ke Ekosistem V-Claim BPJS (Pre-Payment Middleware)', level=2)
     doc.add_paragraph(
         'Agar implementasi di lapangan tidak menimbulkan friksi operasional maupun penolakan dari pihak faskes dan internal BPJS, GARDA-JKN dirancang mengadopsi prinsip "Zero-Disruption Integration". Sistem ini tidak menggantikan aplikasi V-Claim eksisting, melainkan berfungsi sebagai Intelligent Middleware (Pintu Gerbang Cerdas Pra-Pembayaran) yang terhubung melalui tiga pilar integrasi teknis:'
     )
