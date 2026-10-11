@@ -389,16 +389,16 @@ def create_docx():
     doc.add_page_break()
 
     # -------------------------------------------------------------
-    # HALAMAN 9 & 10: BAGIAN 5 (TINGKAT KEMATANGAN, PROTOTYPE & EVALUASI)
+    # HALAMAN 9: BAGIAN 5 (HALAMAN A: TRL 6-7 & BUKTI ML LAPIS 1)
     # -------------------------------------------------------------
     doc.add_heading('Bagian 5: Tingkat Kematangan, Prototype & Bukti Evaluasi (MVP)', level=1)
     
-    doc.add_heading('A. Status Kematangan Sistem (TRL 6–7 End-to-End Functional)', level=2)
+    doc.add_heading('5.1 Status Kematangan Sistem (TRL 6–7 End-to-End Functional)', level=2)
     doc.add_paragraph(
         'Sistem GARDA-JKN telah melewati fase konseptual dan saat ini berstatus Minimum Viable Product (MVP) fungsional penuh (Tingkat Kesiapterapan Teknologi / TRL 6–7). Seluruh subsistem—mulai dari Intake & Security Guardrail, Mesin Skrining XGBoost (Lapis 1), Qdrant Vector Knowledge Base (Lapis 2), LangGraph Clinical Arbiter (Lapis 3), hingga Antarmuka Dasbor Verifikator Next.js—telah terhubung secara end-to-end melalui protokol REST API asynchronous dan Server-Sent Events (SSE).'
     )
 
-    doc.add_heading('B. Bukti Kinerja Klasifikasi Machine Learning Lapis 1', level=2)
+    doc.add_heading('5.2 Bukti Kinerja Klasifikasi Machine Learning Lapis 1', level=2)
     doc.add_paragraph(
         'Pengujian empiris pada 5.000 data historis klaim riil BPJS Kesehatan mencatatkan hasil luar biasa:\n'
         '• PR-AUC Score: 0.9958 (Presisi diskriminasi sangat tinggi pada kelas minoritas anomali).\n'
@@ -412,6 +412,22 @@ def create_docx():
     if os.path.exists('docs/evidence/plot_confusion_matrix.png') and os.path.exists('docs/evidence/plot_roc_curve.png'):
         grid_tbl = doc.add_table(rows=1, cols=2)
         grid_tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
+        # Remove borders
+        tblPr = grid_tbl._tbl.tblPr
+        from docx.oxml import parse_xml
+        from docx.oxml.ns import nsdecls
+        tblBorders = parse_xml(
+            f'<w:tblBorders {nsdecls("w")}>'
+            '<w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+            '<w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+            '<w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+            '<w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+            '<w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+            '<w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+            '</w:tblBorders>'
+        )
+        tblPr.append(tblBorders)
+        
         c_left = grid_tbl.rows[0].cells[0]
         c_right = grid_tbl.rows[0].cells[1]
         c_left.width = Inches(2.9)
@@ -428,7 +444,12 @@ def create_docx():
         p_grid_cap.runs[0].font.size = Pt(9)
         p_grid_cap.runs[0].font.italic = True
 
-    doc.add_heading('C. Evaluasi Penalaran Agentic AI & Anti-Halusinasi (DeepEval Score 1.00)', level=2)
+    doc.add_page_break()
+
+    # -------------------------------------------------------------
+    # HALAMAN 10: BAGIAN 5 (HALAMAN B: DEEPEVAL & DASBOR PLAYWRIGHT)
+    # -------------------------------------------------------------
+    doc.add_heading('5.3 Evaluasi Penalaran Agentic AI & Anti-Halusinasi (DeepEval Score 1.00)', level=2)
     doc.add_paragraph(
         'Menggunakan framework evaluasi LLM berstandar industri (DeepEval) berbasis kaidah RAG Triad:\n'
         '• Faithfulness Score (1.00 / 100,0% - Sempurna): Seluruh fakta klinis dan pasal rujukan dalam Berita Acara 100% bersumber langsung dari dokumen PNPK Kemenkes RI (Zero-Hallucination).\n'
@@ -436,25 +457,19 @@ def create_docx():
         '• High-Reliability Fallback: Dilengkapi parser deterministik regex untuk menjamin draf putusan tetap terbit jika koneksi API LLM eksternal mengalami gangguan.'
     )
 
-    if os.path.exists('docs/evidence/plot_ai_evaluation.png'):
-        doc.add_picture('docs/evidence/plot_ai_evaluation.png', width=Inches(4.2))
-        last_paragraph = doc.paragraphs[-1]
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_cap = doc.add_paragraph('Gambar 5. Hasil Uji Anti-Halusinasi DeepEval (Skor Sempurna 100% pada Faithfulness & Relevancy)')
-        p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_cap.runs[0].font.size = Pt(9)
-        p_cap.runs[0].font.italic = True
-
-    doc.add_heading('D. Bukti Integrasi Antarmuka & Uji End-to-End Playwright Testing', level=2)
+    doc.add_heading('5.4 Bukti Integrasi Antarmuka & Uji End-to-End Playwright Testing', level=2)
     doc.add_paragraph(
-        'Antarmuka dasbor verifikator diwujudkan dalam web modern berbasis Next.js dan Tailwind CSS, diverifikasi secara penuh menggunakan otomasi Playwright Testing (lulus 100% tanpa kendala CORS):'
+        'Antarmuka dasbor verifikator diwujudkan dalam web modern berbasis Next.js dan Tailwind CSS, diverifikasi secara penuh menggunakan otomasi Playwright Testing (lulus 100% tanpa kendala CORS):\n'
+        '• Dasbor Verifikator Interaktif (Human-in-the-Loop): Menampilkan ringkasan audit SHAP, dasar hukum PNPK, dan tombol tindakan penetapan putusan hukum (Setujui / Downgrade / Tolak) yang berada di bawah kendali penuh dokter verifikator.\n'
+        '• Konsol Real-Time Berbasis SSE: Memungkinkan verifikator memantau tahapan audit sistem secara seketika (live-streaming) dengan latensi pemrosesan total di bawah 10 detik per klaim.'
     )
 
-    if os.path.exists('docs/evidence/plot_ui_frontend.png'):
-        doc.add_picture('docs/evidence/plot_ui_frontend.png', width=Inches(4.6))
+    ui_img_path = 'docs/evidence/plot_ui_dashboard_executive.png' if os.path.exists('docs/evidence/plot_ui_dashboard_executive.png') else 'docs/evidence/plot_ui_frontend.png'
+    if os.path.exists(ui_img_path):
+        doc.add_picture(ui_img_path, width=Inches(4.8))
         last_paragraph = doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_cap = doc.add_paragraph('Gambar 6. Tangkapan Layar Dasbor Verifikator GARDA-JKN Hasil Validasi Playwright End-to-End')
+        p_cap = doc.add_paragraph('Gambar 5. Tangkapan Layar Dasbor Verifikator GARDA-JKN Hasil Validasi Playwright End-to-End')
         p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p_cap.runs[0].font.size = Pt(9)
         p_cap.runs[0].font.italic = True
