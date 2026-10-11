@@ -1,396 +1,570 @@
 import os
 from docx import Document
-from docx.shared import Inches, Pt
+from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_TABLE_ALIGNMENT
+
+def set_cell_margins(cell, top=100, bottom=100, left=150, right=150):
+    tcPr = cell._tc.get_or_add_tcPr()
+    tcMar = tcPr.find('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tcMar')
+    if tcMar is None:
+        from docx.oxml import parse_xml
+        from docx.oxml.ns import nsdecls
+        tcMar = parse_xml(f'<w:tcMar {nsdecls("w")}><w:top w:w="{top}" w:type="dxa"/><w:bottom w:w="{bottom}" w:type="dxa"/><w:left w:w="{left}" w:type="dxa"/><w:right w:w="{right}" w:type="dxa"/></w:tcMar>')
+        tcPr.append(tcMar)
 
 def create_docx():
     doc = Document()
     
-    # Title
-    title = doc.add_heading('Draf Proposal Healthkathon 2026: GARDA-JKN', 0)
-    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    
-    # Bagian 1
-    doc.add_heading('Bagian 1: Identitas & Positioning', level=1)
-    doc.add_paragraph('A. Identitas Solusi & Tagline\n'
-                      '• Nama Solusi: GARDA-JKN (Generative Agent for Risk Detection and Adjudication)\n'
-                      '• Tagline: Detect Smarter, Protect JKN: Mesin Penalaran Klinis Berbasis Agentic AI untuk Adjudikasi Klaim Pra-Pembayaran yang Cerdas, Transparan, dan Berkeadilan.\n'
-                      '• Nilai Utama (Core Value): Mentransformasi verifikasi klaim BPJS Kesehatan dari pengawasan klerikal pasca-bayar (post-payment) menjadi adjudikasi cerdas pra-pembayaran (pre-payment) berbasis penalaran medis berstandar Pedoman Nasional Pelayanan Kedokteran (PNPK Kemenkes RI).')
-    
-    doc.add_paragraph('B. Kategori & Sub-Kategori Tantangan\n'
-                      '• Kategori Utama: Efisiensi Risiko pada Fasilitas Kesehatan (FKRTL)\n'
-                      '• Sub-Kategori Fokus:\n'
-                      '  1. Upcoding & Unbundling: Manipulasi tingkat keparahan diagnosis (severity level I/II/III) dan pemecahan paket layanan INA-CBG yang tidak sesuai indikasi klinis.\n'
-                      '  2. Phantom & Repeat Billing: Pengajuan klaim fiktif atas tindakan/layanan yang tidak pernah diberikan atau klaim berulang pada episode rawat yang sama.\n'
-                      '  3. Prolonged Stay & Readmisi Berulang: Perpanjangan lama rawat inap (LOS) tanpa justifikasi medis serta pemulangan dini yang disengaja untuk klaim berulang.')
-    
-    doc.add_paragraph('C. Positioning Strategis & Diferensiasi Unik\n'
-                      'Di tengah keterbatasan sistem deteksi kecurangan saat ini, GARDA-JKN mendefinisikan ulang lanskap adjudikasi klaim melalui tiga pilar positioning pembeda:\n'
-                      '1. Bukan Sekadar Heuristik Statis (Rule-Based Biasa): Sistem aturan statis konvensional sangat kaku dan rentan dimanipulasi (gaming the system). GARDA-JKN menggabungkan Machine Learning adaptif (Stratified Isolation Forest & XGBoost) yang mampu membedah anomali non-linear lintas 14 strata fasilitas kesehatan tanpa bias ukuran rumah sakit.\n'
-                      '2. Bukan "Black-Box AI" yang Memicu Friksi: Mayoritas sistem AI ditolak oleh faskes karena hanya mengeluarkan skor probabilitas tanpa alasan medis yang jelas. GARDA-JKN menghadirkan Explainable AI berbasis Agentic RAG yang memvalidasi setiap temuan dengan rujukan eksak bab, tabel, dan halaman dari PNPK Kemenkes secara otomatis.\n'
-                      '3. Arsitektur Pra-Pembayaran Nir-Friksi (Zero-Disruption Middleware): Beroperasi sebagai middleware cerdas yang terhubung langsung ke Web Service V-Claim BPJS Kesehatan, menyelesaikan adjudikasi dalam hitungan detik tanpa merombak sistem eksisting, sekaligus menjamin kendali hukum tetap berada di tangan Dokter Verifikator (Human-in-the-Loop).')
-    
-    doc.add_paragraph('D. Profil Pengembang & Kapabilitas Eksekusi End-to-End (Solo Innovator)\n'
-                      'Sistem GARDA-JKN dirancang, dibangun, dan diuji secara mandiri oleh Inovator Tunggal: Wahyu Maulana Ishaq (Solo Developer & Fullstack AI Architect), mahasiswa S1 Informatika Universitas Alma Ata (Peminatan Data Science, IPK 3.84/4.00) dengan keahlian multidisipliner yang mencakup seluruh spektrum sistem:\n'
-                      '• Rekayasa AI & Data Science: Pemodelan Stratified Isolation Forest (14 strata) dan XGBoost terlatih pada 5.000 data historis klaim, basis data vektor Qdrant, serta orkestrasi penalaran multi-agen LangGraph.\n'
-                      '• Arsitektur Perangkat Lunak & Integrasi: Microservice FastAPI, integrasi bridging API V-Claim BPJS Kesehatan, dashboard antarmuka Next.js/React, dan otomasi pengujian sistem Playwright E2E.\n'
-                      '• Domain Klinis & Regulasi Medis: Pemodelan aturan INA-CBG, kurasi ontologi medis PNPK Kemenkes RI, serta penjaminan mutu inferensi bebas halusinasi menggunakan framework DeepEval (skor 1.00).')
-    
-    # Bagian 2
-    doc.add_heading('Bagian 2: Masalah & Urgensi', level=1)
-    doc.add_paragraph('Spesifisitas Masalah:\nKebocoran dana Program JKN akibat fraud sistemik di Fasilitas Kesehatan Tingkat Lanjut (FKRTL). Modus utama mencakup Upcoding (manipulasi tingkat severity INA-CBG agar tarif lebih mahal), Phantom Billing (klaim pasien/tindakan fiktif), dan Readmisi (pemecahan episode rawat inap).')
-    doc.add_paragraph('Dukungan Data & Urgensi:\n'
-                      '- Kerugian Finansial: Berdasarkan tinjauan KPK dan Kemenkes (2024), estimasi kebocoran dana JKN mencapai 5-10% dari total beban klaim, atau setara dengan Rp10 hingga Rp15 Triliun per tahun. Bahkan pada Juli 2024, KPK menemukan konfirmasi Phantom Billing senilai Rp35 Miliar hanya dari 3 rumah sakit sebagai fenomena puncak gunung es.\n'
-                      '- Beban Kerja Ekstrem (Fatigue): Pada tahun 2023, layanan JKN menyentuh 606,7 juta kunjungan. Verifikator medis BPJS Kesehatan dihadapkan pada 8 hingga 12 juta klaim FKRTL per bulan. Dengan rasio ribuan klaim per verifikator dan batas waktu pencairan SLA (Service Level Agreement) 15 hari, verifikasi manual sangat rentan human error dan mustahil meneliti rekam medis 100% secara akurat.')
-    doc.add_paragraph('Jika kecurangan berlapis ini tidak ditekan di fase pre-payment menggunakan sistem pendeteksi cerdas yang mampu membedah pola non-linear secara seketika (real-time), kebocoran anggaran JKN akan menggerus keberlanjutan jaminan kesehatan nasional bagi ratusan juta rakyat Indonesia.')
-    
-    # Bagian 3
-    doc.add_heading('Bagian 3: Solusi, Keunggulan & Arsitektur', level=1)
-    doc.add_paragraph(
-        'GARDA-JKN adalah sistem adjudikasi klaim pra-pembayaran (pre-payment) berbasis Tri-Layer AI yang '
-        'memverifikasi aspek finansial, kepatuhan regulasi medis, dan justifikasi hukum dalam hitungan <10 detik per klaim, '
-        'sembari tetap menempatkan dokter verifikator sebagai penentu keputusan akhir (Human-in-the-Loop).'
-    )
-    
-    doc.add_heading('A. Arsitektur 3-Lapis (Tri-Layer AI System)', level=2)
-    doc.add_paragraph(
-        'Alih-alih mengandalkan satu model Blackbox AI yang rentan salah dan memicu sengketa faskes, '
-        'GARDA-JKN membagi adjudikasi ke dalam 3 simpul cerdas yang saling memvalidasi secara berjenjang:'
-    )
-    doc.add_paragraph(
-        '• Lapis 1 — Screening Finansial Kilat (XGBoost + SHAP):\n'
-        '  - Fungsi: Menapis anomali biaya dan pola klaim non-linear dalam hitungan milidetik.\n'
-        '  - Keunggulan: Dilatih dengan Stratified Isolation Forest (14 strata RS) sehingga tidak bias terhadap faskes kecil (Kelas C/D/3T). Algoritma SHAP menerjemahkan skor angka menjadi Auditor Reason Codes yang transparan bagi verifikator.'
-    )
-    doc.add_paragraph(
-        '• Lapis 2 — Mesin Pencari Regulasi Medis (Qdrant RAG + PyMuPDF4LLM):\n'
-        '  - Fungsi: Mencocokkan kepatuhan tindakan medis terhadap Pedoman Nasional Pelayanan Kedokteran (PNPK Kemenkes).\n'
-        '  - Keunggulan: Menggunakan PyMuPDF4LLM untuk mengekstrak "Tabel Bersarang" (dosis obat) dan "Flowchart Klinis" menjadi Markdown murni, menjaga konteks relasional medis tetap utuh saat diindeks ke Qdrant Vector DB.'
-    )
-    doc.add_paragraph(
-        '• Lapis 3 — Agen Penalaran Klinis (LangGraph Agent - DeepSeek):\n'
-        '  - Fungsi: The Clinical Arbiter yang menyintesis anomali Lapis 1 dengan bukti regulasi Lapis 2.\n'
-        '  - Keunggulan: Berdasarkan Fraud Control Matrix, agen membedakan "dugaan heuristik" (gap tarif) dengan "bukti otentik" (pelanggaran kriteria PNPK) guna menerbitkan draf Berita Acara yang definitif dan berdasar hukum.'
-    )
+    # Page setup - Margins 1 inch
+    for section in doc.sections:
+        section.top_margin = Inches(1.0)
+        section.bottom_margin = Inches(1.0)
+        section.left_margin = Inches(1.0)
+        section.right_margin = Inches(1.0)
 
-    doc.add_heading('B. Alur Kerja Deterministik 5 Simpul (LangGraph StateGraph)', level=2)
-    doc.add_paragraph(
-        'Alur eksekusi dikelola oleh StateGraph deterministik (bebas risiko infinite loop) melalui 5 tahapan terkoordinasi:\n'
-        '1. Intake & Security Node: Menyensor identitas pasien (PII Masking Nama & NIK) serta memindai ancaman Prompt Injection / Jailbreak pada catatan medis.\n'
-        '2. Risk Scoring Node: Lapis 1 menghitung skor anomali finansial secara instan terhadap klaster faskes yang setara.\n'
-        '3. Smart Handoff Router:\n'
-        '   - Klaim Wajar (Inlier): Langsung dialihkan ke jalur hijau Auto-Approve (<100 milidetik).\n'
-        '   - Klaim Mencurigakan (Outlier): Diteruskan ke tahap audit regulasi medis Lapis 2 & 3.\n'
-        '4. Clinical Arbiter Node: LLM menyusun rekomendasi putusan definitif (Approve, Downgrade Tarif, atau Escalate) disertai sitasi pasal PNPK.\n'
-        '5. Human-in-the-Loop Node: Berkas berstatus ambigu (ESCALATED) didorong ke antarmuka verifikator agar Dokter Verifikator memegang hak veto mutlak.'
-    )
+    # -------------------------------------------------------------
+    # HALAMAN 1: COVER / JUDUL RESMI
+    # -------------------------------------------------------------
+    p_pre = doc.add_paragraph()
+    p_pre.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r_pre = p_pre.add_run('PROPOSAL INOVASI HEALTHKATHON BPJS KESEHATAN 2026\n')
+    r_pre.font.size = Pt(13)
+    r_pre.font.bold = True
+    r_pre.font.color.rgb = RGBColor(0, 114, 206) # BPJS Blue
 
-    if os.path.exists('docs/evidence/plot_workflow_system.png'):
-        doc.add_picture('docs/evidence/plot_workflow_system.png', width=Inches(5.0))
-        last_paragraph = doc.paragraphs[-1]
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    title_p = doc.add_paragraph()
+    title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    title_r = title_p.add_run('GARDA-JKN\nGenerative Agent for Risk Detection and Adjudication')
+    title_r.font.size = Pt(22)
+    title_r.font.bold = True
 
-    doc.add_heading('C. Keunggulan Kompetitif Utama (Pembeda 30 Detik Baca)', level=2)
-    diff_table = doc.add_table(rows=1, cols=3)
-    diff_table.style = 'Light Shading Accent 1'
-    hdr = diff_table.rows[0].cells
-    hdr[0].text = 'Dimensi Evaluasi'
-    hdr[1].text = 'Sistem Konvensional / AI Standar'
-    hdr[2].text = 'GARDA-JKN (Inovasi Kami)'
+    tagline_p = doc.add_paragraph()
+    tagline_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    tagline_r = tagline_p.add_run('“Detect Smarter, Protect JKN: Mesin Penalaran Klinis Berbasis Agentic AI untuk Adjudikasi Klaim Pra-Pembayaran yang Cerdas, Transparan, dan Berkeadilan”\n')
+    tagline_r.font.size = Pt(12)
+    tagline_r.font.italic = True
 
-    diffs = [
-        ('Transparansi Keputusan', 'Skor risiko "Black-box" tanpa penjelasan klinis.', 'Explainable AI: SHAP Reason Codes + Sitasi Pasal PNPK Kemenkes.'),
-        ('Keadilan Faskes (Fairness)', 'Bias memojokkan RS kecil/daerah karena volume beda.', 'Stratified 14 Strata: Audit adil berbasis klaster faskes setara.'),
-        ('Kecepatan Operasional', 'Audit manual butuh 15-25 menit per berkas rawat.', 'Selesai di bawah 10 detik per klaim (Auto-Approve klaim bersih).'),
-        ('Kedaulatan Keputusan', 'Otonomi buta AI berisiko penolakan sepihak.', 'Human-in-the-Loop: Dokter Verifikator pemegang hak veto mutlak.')
+    meta_table = doc.add_table(rows=4, cols=2)
+    meta_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    meta_data = [
+        ('Kategori Utama', 'Efisiensi Risiko pada Fasilitas Kesehatan (FKRTL)'),
+        ('Sub-Kategori Fokus', 'Upcoding & Unbundling, Phantom & Repeat Billing, Prolonged Stay'),
+        ('Inovator / Pengembang', 'Wahyu Maulana Ishaq (Fullstack AI Engineer & Health Informatics Specialist)'),
+        ('Afiliasi Akademik', 'Universitas Alma Ata, Yogyakarta (Peminatan Data Science, IPK 3.84)')
     ]
-    for dim, conv, garda in diffs:
-        r_cells = diff_table.add_row().cells
-        r_cells[0].text = dim
-        r_cells[1].text = conv
-        r_cells[2].text = garda
+    for i, (k, v) in enumerate(meta_data):
+        row = meta_table.rows[i].cells
+        row[0].width = Inches(2.2)
+        row[1].width = Inches(4.3)
+        row[0].paragraphs[0].add_run(k).bold = True
+        row[1].paragraphs[0].add_run(v)
+    
+    doc.add_page_break()
 
-    doc.add_heading('D. Mekanisme Integrasi ke Ekosistem V-Claim BPJS (Zero-Disruption Middleware)', level=2)
+    # -------------------------------------------------------------
+    # HALAMAN 2: DAFTAR ISI (1 HALAMAN PADAT & RAPI)
+    # -------------------------------------------------------------
+    toc_title = doc.add_heading('DAFTAR ISI', level=1)
+    toc_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    toc_table = doc.add_table(rows=1, cols=2)
+    toc_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    hdr = toc_table.rows[0].cells
+    hdr[0].width = Inches(5.5)
+    hdr[1].width = Inches(1.0)
+    hdr[0].paragraphs[0].add_run('Struktur Proposal & Judul Bab').bold = True
+    hdr[1].paragraphs[0].add_run('Hal').bold = True
+    hdr[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.RIGHT
+
+    toc_items = [
+        ('BAGIAN 1: IDENTITAS & POSITIONING', '3'),
+        ('  1.1 Identitas Solusi & Tagline', '3'),
+        ('  1.2 Kategori & Sub-Kategori Tantangan', '3'),
+        ('  1.3 Positioning Strategis & Diferensiasi Unik', '3'),
+        ('  1.4 Profil Pengembang & Kapabilitas Eksekusi (Solo Innovator)', '3'),
+        ('BAGIAN 2: MASALAH & URGENSI', '4'),
+        ('  2.1 Darurat Kebocoran Dana JKN & Modus Fraud Terbanyak', '4'),
+        ('  2.2 Analisis Data Historis & Beban Kognitif Verifikator', '4'),
+        ('BAGIAN 3: SOLUSI, KEUNGGULAN & ARSITEKTUR', '5'),
+        ('  3.1 Konsep Solusi: Platform Adjudikasi 3-Lapis (Tri-Layer AI System)', '5'),
+        ('  3.2 Alur Workflow Deterministik (LangGraph StateGraph 5 Simpul)', '5'),
+        ('  3.3 Keunggulan Utama Dibandingkan Solusi Eksisting (Tabel 4 Dimensi)', '6'),
+        ('  3.4 Mekanisme Integrasi ke Ekosistem V-Claim BPJS (Pre-Payment Middleware)', '6'),
+        ('BAGIAN 4: PENDEKATAN TEKNIS & DATA', '7'),
+        ('  4.1 Karakteristik Data Empiris (The Golden Dataset 5.000 Klaim)', '7'),
+        ('  4.2 Pelabelan Semi-Supervised & Stratified Isolation Forest', '7'),
+        ('  4.3 Bobot Fitur Kritis & Interpretabilitas Model (Explainable AI - SHAP)', '8'),
+        ('BAGIAN 5: TINGKAT KEMATANGAN, PROTOTYPE & BUKTI EVALUASI (MVP)', '9'),
+        ('  5.1 Status Kematangan Sistem (TRL 6–7 End-to-End Functional)', '9'),
+        ('  5.2 Bukti Kinerja Klasifikasi Machine Learning Lapis 1 (Confusion Matrix & ROC)', '9'),
+        ('  5.3 Evaluasi Penalaran Agentic AI & Anti-Halusinasi (DeepEval Score 1.00)', '10'),
+        ('  5.4 Bukti Integrasi Antarmuka & Uji End-to-End Playwright Testing', '10'),
+        ('BAGIAN 6: RENCANA & MODEL BISNIS (VHDIC CANVAS)', '11'),
+        ('  6.1 Kerangka VHDIC Canvas & Keberlanjutan Sistem', '11'),
+        ('BAGIAN 7: DAMPAK & NILAI TRANSFORMASI', '12'),
+        ('  7.1 Transformasi SDM Verifikator (Klerikal ke Clinical Investigator)', '12'),
+        ('  7.2 Akselerasi Kecepatan Operasional (<10 Detik per Berkas)', '12'),
+        ('  7.3 Dampak Multi-Penerima Manfaat (The Tri-Benefit Ecosystem)', '12'),
+        ('  7.4 Matriks Komparasi Transformasi Sebelum vs Sesudah GARDA-JKN', '12'),
+        ('BAGIAN 8: RISIKO, PRIVASI & ETIKA', '13'),
+        ('  8.1 Perlindungan Data Pribadi (Kepatuhan UU PDP No. 27/2022)', '13'),
+        ('  8.2 Mitigasi Bias Algoritma & Batasan Operasional AI (14 Strata Faskes)', '13'),
+        ('  8.3 Peran Manusia dalam Keputusan (Human-in-the-Loop Governance)', '13'),
+        ('  8.4 Matriks Penilaian & Mitigasi Risiko Kritis', '13'),
+        ('BAGIAN 9: PROFIL PENGEMBANG & REKAM JEJAK EKSEKUSI', '14'),
+        ('  9.1 Kredensial Akademik & Pengalaman AI Medis (AegisMDT)', '14'),
+        ('  9.2 Pelatihan Tokyo University, Uber AI RLHF, & Rekognisi Global', '14')
+    ]
+
+    for item, page in toc_items:
+        r_cells = toc_table.add_row().cells
+        r_cells[0].width = Inches(5.5)
+        r_cells[1].width = Inches(1.0)
+        p_item = r_cells[0].paragraphs[0]
+        p_item.paragraph_format.space_before = Pt(0)
+        p_item.paragraph_format.space_after = Pt(1)
+        p_item.paragraph_format.line_spacing = 1.0
+        r_it = p_item.add_run(item)
+        r_it.font.size = Pt(9.5)
+        if item.startswith('BAGIAN'):
+            r_it.font.bold = True
+        p_page = r_cells[1].paragraphs[0]
+        p_page.paragraph_format.space_before = Pt(0)
+        p_page.paragraph_format.space_after = Pt(1)
+        p_page.paragraph_format.line_spacing = 1.0
+        p_page.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        r_pg = p_page.add_run(page)
+        r_pg.font.size = Pt(9.5)
+        if item.startswith('BAGIAN'):
+            r_pg.font.bold = True
+
+    doc.add_page_break()
+
+    # -------------------------------------------------------------
+    # HALAMAN 3: BAGIAN 1 (IDENTITAS & POSITIONING)
+    # -------------------------------------------------------------
+    doc.add_heading('Bagian 1: Identitas & Positioning', level=1)
+    
     doc.add_paragraph(
-        'GARDA-JKN beroperasi sebagai middleware pra-pembayaran tanpa mengubah alur SIMRS faskes melalui 3 jalur teknis:\n'
-        '• 1. Web Service Bridging V-Claim (API Interceptor): Mencegat payload klaim via RESTful API standar BPJS (HMAC-SHA256 & AES-256) saat tombol "Kirim Klaim" ditekan di SIMRS.\n'
-        '• 2. Embedded AI Review Panel di Layar Verifikator: Panel rekomendasi AI muncul otomatis di dalam dasbor V-Claim verifikator lengkap dengan bukti pasal PNPK dan tombol aksi hukum.\n'
-        '• 3. Interoperabilitas SatuSehat (HL7 FHIR): Menarik bukti klinis digital (lab kreatinin, rekam EKG) via SatuSehat Kemenkes untuk validasi klaim fiktif secara presisi.'
+        'A. Identitas Solusi & Nilai Utama\n'
+        '• Nama Solusi: GARDA-JKN (Generative Agent for Risk Detection and Adjudication)\n'
+        '• Tagline: Detect Smarter, Protect JKN: Mesin Penalaran Klinis Berbasis Agentic AI untuk Adjudikasi Klaim Pra-Pembayaran yang Cerdas, Transparan, dan Berkeadilan.\n'
+        '• Nilai Utama (Core Value): Mentransformasi verifikasi klaim BPJS Kesehatan dari pengawasan klerikal pasca-bayar (post-payment) menjadi adjudikasi cerdas pra-pembayaran (pre-payment) berbasis penalaran medis berakar pada Pedoman Nasional Pelayanan Kedokteran (PNPK Kemenkes RI).'
     )
     
-    # Bagian 4
-    doc.add_heading('Bagian 4: Pendekatan Teknis & Data (Visualisasi)', level=1)
+    doc.add_paragraph(
+        'B. Kategori & Sub-Kategori Tantangan\n'
+        '• Kategori Utama: Efisiensi Risiko pada Fasilitas Kesehatan (FKRTL)\n'
+        '• Sub-Kategori Fokus:\n'
+        '  1. Upcoding & Unbundling: Manipulasi tingkat keparahan diagnosis (severity level I/II/III) dan pemecahan episode klaim INA-CBG yang tidak sesuai indikasi klinis.\n'
+        '  2. Phantom & Repeat Billing: Pengajuan klaim fiktif atas tindakan/sarana yang tidak pernah diberikan, serta penagihan berulang pada episode rawat yang sama.\n'
+        '  3. Prolonged Stay & Readmisi Berulang: Perpanjangan lama rawat inap (LOS) tanpa justifikasi medis serta pemulangan dini yang disengaja untuk memicu klaim berulang.'
+    )
     
-    doc.add_heading('A. Sumber dan Karakteristik Data (The Golden Dataset)', level=2)
     doc.add_paragraph(
-        'Dalam membangun fondasi analitik yang kokoh, GARDA-JKN mengintegrasikan data operasional resmi BPJS Kesehatan yang mencakup aspek administratif, finansial, dan klinis. Penggabungan tabel relasional ini dirancang khusus untuk membedah korelasi antara tarif klaim dengan riwayat medis pasien:'
+        'C. Positioning Strategis & Diferensiasi Unik\n'
+        '1. Bukan Sekadar Heuristik Statis (Rule-Based Biasa): Sistem aturan statis konvensional sangat kaku dan rentan dimanipulasi (gaming the system). GARDA-JKN menggabungkan Machine Learning adaptif (Stratified Isolation Forest & XGBoost) yang mampu membedah anomali non-linear lintas 14 strata faskes tanpa bias ukuran rumah sakit.\n'
+        '2. Bukan Black-Box AI yang Memicu Friksi: Mayoritas model AI ditolak rumah sakit karena hanya mengeluarkan skor probabilitas tanpa alasan klinis yang jelas. GARDA-JKN menghadirkan Clinical Explainable AI berbasis Agentic RAG yang memvalidasi setiap temuan dengan kutipan pasal, tabel, dan halaman resmi dari PNPK Kemenkes RI.\n'
+        '3. Arsitektur Pra-Pembayaran Nir-Friksi (Zero-Disruption Middleware): Beroperasi sebagai middleware cerdas yang terhubung langsung ke Web Service V-Claim BPJS Kesehatan (<10 detik per klaim) tanpa merombak sistem eksisting, sekaligus menjamin kendali hukum tetap berada di tangan Dokter Verifikator (Human-in-the-Loop).'
     )
-    doc.add_paragraph('• Sumber Data Empiris: Menggabungkan data kunjungan FKRTL (202403_fkrtl.dta) untuk variabel biaya dan Length of Stay, dengan data diagnosis sekunder (202405_diagnosissekunder.dta) berbasis nomor kunjungan (FKL02) guna memvalidasi komorbiditas penyerta.')
-    doc.add_paragraph('• Strategi Stratified Sampling (5.000 Klaim): Dari total populasi ~4 juta baris klaim, kami mengekstrak 5.000 sampel representatif (The Golden Dataset). Langkah metodologis ini diambil untuk merepresentasikan proporsi seimbang Rumah Sakit Kelas A, B, C, dan D serta menghindari jebakan extreme class imbalance (bias terhadap klaim normal).')
+    
+    doc.add_paragraph(
+        'D. Profil Pengembang & Kapabilitas Eksekusi (Solo Innovator)\n'
+        'Sistem GARDA-JKN dirancang, dibangun, dan diuji secara mandiri oleh Inovator Tunggal: Wahyu Maulana Ishaq (Solo Developer & Fullstack AI Architect), mahasiswa S1 Informatika Universitas Alma Ata (Data Science, IPK 3.84/4.00) dengan keahlian yang mencakup seluruh spektrum sistem:\n'
+        '• Rekayasa AI & Data Science: Pemodelan Stratified Isolation Forest (14 strata) dan XGBoost terlatih pada 5.000 data historis klaim, Vector DB Qdrant, serta orkestrasi multi-agen LangGraph.\n'
+        '• Arsitektur Perangkat Lunak & Integrasi: Microservice FastAPI, integrasi bridging API V-Claim BPJS, dashboard Next.js/React, dan pengujian otomatis Playwright E2E.\n'
+        '• Domain Klinis & Regulasi: Pemodelan aturan INA-CBG, kurasi ontologi PNPK Kemenkes RI, serta evaluasi anti-halusinasi medis DeepEval (skor sempurna 1.00).'
+    )
 
-    doc.add_heading('B. Metode Pelabelan AI (Semi-Supervised Learning) & Validasi Outlier', level=2)
+    doc.add_page_break()
+
+    # -------------------------------------------------------------
+    # HALAMAN 4: BAGIAN 2 (MASALAH & URGENSI)
+    # -------------------------------------------------------------
+    doc.add_heading('Bagian 2: Masalah & Urgensi', level=1)
+    
     doc.add_paragraph(
-        'Tantangan mendasar dalam mendeteksi fraud klaim kesehatan di Indonesia adalah ketiadaan label biner (ground-truth fraud) pada data mentah operasional BPJS. Untuk memecahkan kendala ini secara objektif tanpa pelabelan manual yang subjektif, GARDA-JKN mengadopsi paradigma Semi-Supervised Learning dengan mengimplementasikan algoritma Stratified Isolation Forest. Algoritma ini membandingkan deviasi klaim hanya terhadap kelompok rekanan faskes yang setara (peer-group comparison):'
+        'A. Darurat Kebocoran Dana JKN & Modus Fraud Terbanyak\n'
+        'Keberlanjutan finansial Program Jaminan Kesehatan Nasional (JKN) terus dihadapkan pada ancaman krisis akibat praktik kecurangan (fraud) medis yang sistematis di Fasilitas Kesehatan Rujukan Tingkat Lanjut (FKRTL). Modus paling dominan adalah Phantom Billing (klaim fiktif) dan Upcoding (manipulasi severity level INA-CBG agar tarif melambung):\n'
+        '• Estimasi Kerugian Finansial: Tinjauan Komisi Pemberantasan Korupsi (KPK) dan Kementerian Kesehatan (2024) mengungkap kebocoran dana akibat fraud mencapai 5%–10% dari total beban jaminan kesehatan, atau setara dengan Rp10 hingga Rp20 Triliun per tahun. Pada operasi penindakan Juli 2024, KPK mengonfirmasi fraud phantom billing senilai Rp35 Miliar hanya dari 3 rumah sakit sebagai fenomena puncak gunung es.\n'
+        '• Konfirmasi Manajemen BPJS (2026): Direktur Utama BPJS Kesehatan menegaskan bahwa potensi inefisiensi dan klaim anomali di faskes masih menyentuh angka triliunan rupiah per tahun jika tidak ditangani dengan teknologi presisi.'
     )
+
+    doc.add_paragraph(
+        'B. Beban Kognitif Ekstrem Verifikator (The Cognitive Fatigue Bottleneck)\n'
+        'Pada tahun 2024–2026, pemanfaatan layanan JKN menembus lebih dari 600 juta kunjungan. Sebanyak 1.500–2.000 dokter verifikator BPJS Kesehatan harus memverifikasi 8 hingga 12 juta klaim FKRTL setiap bulan. Dengan rasio 3.500–5.000 berkas per verifikator dan batas SLA pencairan 15 hari, verifikasi manual berbasis berkas fisik/PDF mustahil meneliti 100% rekam medis dan rentan memicu human error.'
+    )
+
     if os.path.exists('docs/evidence/plot_eda_distribution.png'):
         doc.add_picture('docs/evidence/plot_eda_distribution.png', width=Inches(4.5))
         last_paragraph = doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_cap = doc.add_paragraph('Gambar 1. Bukti Anomali Distribusi Biaya Klaim dan Severity Level pada Data Historis JKN')
+        p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_cap.runs[0].font.size = Pt(9)
+        p_cap.runs[0].font.italic = True
 
-    doc.add_paragraph('Berdasarkan visualisasi grafik di atas, sistem berhasil mengklasifikasikan 5.000 klaim mentah ke dalam dua klaster terukur:')
-    doc.add_paragraph('• Klaster Inlier (Klaim Normal - 93,0%): Sebanyak 4.651 klaim terkonfirmasi memiliki pola biaya dan durasi rawat yang wajar serta selaras dengan pedoman klinis.')
-    doc.add_paragraph('• Klaster Outlier (Indikasi Fraud - 7,0%): Sebanyak 349 klaim berhasil diisolasi sebagai anomali statistik berisiko tinggi yang menjadi target prioritas verifikasi.')
-    doc.add_paragraph('• Validasi Realitas Empiris: Rasio temuan anomali sebesar 7,0% ini sangat presisi dan konsisten dengan hasil audit KPK dan Kemenkes (2024) yang menaksir kebocoran dana JKN akibat fraud berada pada rentang 5% hingga 10% per tahun.')
+    doc.add_page_break()
+
+    # -------------------------------------------------------------
+    # HALAMAN 5: BAGIAN 3 (HALAMAN A: KONSEP & ALUR DETERMINISTIK)
+    # -------------------------------------------------------------
+    doc.add_heading('Bagian 3: Solusi, Keunggulan & Arsitektur', level=1)
+    
+    p_def = doc.add_paragraph()
+    r_def_lbl = p_def.add_run('Definisi Solusi: ')
+    r_def_lbl.bold = True
+    p_def.add_run(
+        'GARDA-JKN adalah platform adjudikasi klaim pra-pembayaran (pre-payment) berbasis Tri-Layer AI '
+        'yang menuntaskan verifikasi anomali finansial, kepatuhan regulasi medis, dan justifikasi hukum dalam <10 detik per klaim, '
+        'dengan dokter verifikator sebagai penentu akhir (Human-in-the-Loop).'
+    )
+    p_def.paragraph_format.space_after = Pt(4)
+
+    doc.add_heading('3.1 Arsitektur 3-Lapis (Tri-Layer AI System)', level=2)
+    p_tri = doc.add_paragraph(
+        '• Lapis 1 (XGBoost + SHAP — High-Speed Financial Screening): Menapis anomali biaya dan pola non-linear dalam milidetik. Menggunakan Stratified Isolation Forest (14 strata RS) sehingga nir-bias terhadap RS Kelas C/D/3T. Algoritma SHAP menerjemahkan skor angka menjadi Auditor Reason Codes transparan.\n'
+        '• Lapis 2 (Qdrant RAG + PyMuPDF4LLM — Medical Vector Search): Mencocokkan kepatuhan tindakan medis terhadap Pedoman Nasional Pelayanan Kedokteran (PNPK Kemenkes RI). PyMuPDF4LLM mengekstrak tabel bertingkat (dosis obat) dan diagram alur klinis ke format Markdown murni tanpa merusak konteks relasional medis.\n'
+        '• Lapis 3 (LLM LangGraph Arbiter — Clinical Reasoning): The Clinical Arbiter (DeepSeek-Chat) menyintesis temuan finansial Lapis 1 dan bukti teks pedoman PNPK Lapis 2 berbasis Fraud Control Matrix guna menerbitkan draf rekomendasi Berita Acara definitif.'
+    )
+    p_tri.paragraph_format.space_after = Pt(4)
+
+    doc.add_heading('3.2 Alur Workflow Deterministik (LangGraph StateGraph 5 Simpul)', level=2)
+    
+    # 2-Column layout for 5 Simpul + Diagram to fit comfortably on Page 5
+    flow_table = doc.add_table(rows=1, cols=2)
+    flow_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    tblPr = flow_table._tbl.tblPr
+    from docx.oxml import parse_xml
+    from docx.oxml.ns import nsdecls
+    tblBorders = parse_xml(
+        f'<w:tblBorders {nsdecls("w")}>'
+        '<w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+        '<w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+        '<w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+        '<w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+        '<w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+        '<w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+        '</w:tblBorders>'
+    )
+    tblPr.append(tblBorders)
+
+    c_left = flow_table.rows[0].cells[0]
+    c_right = flow_table.rows[0].cells[1]
+    c_left.width = Inches(3.6)
+    c_right.width = Inches(2.9)
+    set_cell_margins(c_left, top=30, bottom=30, left=30, right=60)
+    set_cell_margins(c_right, top=30, bottom=30, left=60, right=30)
+
+    p_nodes = c_left.paragraphs[0]
+    p_nodes.paragraph_format.line_spacing = 1.05
+    p_nodes.paragraph_format.space_after = Pt(1)
+    p_nodes.add_run(
+        '1. Intake & Security Node: PII Masking sensor identitas pasien (Nama/NIK, UU PDP No. 27/2022) & pemindaian prompt injection / jailbreak pada resume medis.\n\n'
+        '2. Risk Scoring Node: Lapis 1 mengevaluasi skor anomali finansial secara instan terhadap klaster faskes setara.\n\n'
+        '3. Smart Handoff Router: Inlier langsung ke Auto-Approve (<100ms); Outlier diarahkan ke RAG medis Lapis 2.\n\n'
+        '4. Clinical Arbiter Node: LLM menyusun rekomendasi putusan (Approve, Downgrade Tarif, Escalate) disertai sitasi pasal PNPK.\n\n'
+        '5. Human-in-the-Loop Node: Berkas ambigu (ESCALATED) didorong ke dasbor verifikator untuk putusan hukum akhir.'
+    ).font.size = Pt(8.5)
+
+    if os.path.exists('docs/evidence/plot_workflow_system.png'):
+        p_img = c_right.paragraphs[0]
+        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_img.paragraph_format.space_after = Pt(2)
+        r_img = p_img.add_run()
+        r_img.add_picture('docs/evidence/plot_workflow_system.png', width=Inches(2.7))
+        p_cap = c_right.add_paragraph('Gambar 2. Alur 5 Simpul LangGraph StateGraph')
+        p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_cap.paragraph_format.space_before = Pt(2)
+        r_c = p_cap.runs[0]
+        r_c.font.size = Pt(8.0)
+        r_c.font.italic = True
+
+    doc.add_page_break()
+
+    # -------------------------------------------------------------
+    # HALAMAN 6: BAGIAN 3 (HALAMAN B: KEUNGGULAN & INTEGRASI V-CLAIM)
+    # -------------------------------------------------------------
+    doc.add_heading('3.3 Keunggulan Utama Dibandingkan Solusi Eksisting (Tabel Komparasi 4 Dimensi)', level=2)
+    p_diff_intro = doc.add_paragraph(
+        'Keunggulan kompetitif GARDA-JKN dibandingkan sistem verifikasi konvensional maupun sistem AI standar berakar pada 4 pilar pembeda yang dapat dievaluasi dalam 30 detik:'
+    )
+    p_diff_intro.paragraph_format.space_after = Pt(4)
+
+    diff_table = doc.add_table(rows=1, cols=3)
+    diff_table.style = 'Light Shading Accent 1'
+    diff_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    hdr = diff_table.rows[0].cells
+    hdr[0].width = Inches(1.8)
+    hdr[1].width = Inches(2.3)
+    hdr[2].width = Inches(2.4)
+    hdr[0].paragraphs[0].add_run('Dimensi Evaluasi').bold = True
+    hdr[1].paragraphs[0].add_run('Sistem Konvensional / AI Biasa').bold = True
+    hdr[2].paragraphs[0].add_run('GARDA-JKN (Inovasi Kami)').bold = True
+
+    diffs = [
+        ('Transparansi Keputusan', 'Skor risiko "Black-box" probabilitas tanpa alasan klinis.', 'Explainable AI: SHAP Reason Codes + Sitasi Pasal & Tabel PNPK Kemenkes.'),
+        ('Keadilan Faskes (Fairness)', 'Bias volume memojokkan RS tipe kecil (C/D) & daerah 3T.', 'Stratified 14 Strata: Normalisasi klaster faskes setara (audit adil nir-bias).'),
+        ('Kecepatan Operasional', 'Audit manual lambat (15–25 menit per berkas rawat inap).', 'Real-Time Pra-Bayar: <10 detik per klaim (Auto-Approve bersih <100ms).'),
+        ('Kedaulatan Keputusan', 'Otonomi buta AI berisiko penolakan & friksi hukum RS.', 'Human-in-the-Loop: Dokter Verifikator pemegang hak veto putusan akhir.')
+    ]
+    for dim, conv, garda in diffs:
+        r_cells = diff_table.add_row().cells
+        r_cells[0].width = Inches(1.8)
+        r_cells[1].width = Inches(2.3)
+        r_cells[2].width = Inches(2.4)
+        for idx, text in enumerate([dim, conv, garda]):
+            set_cell_margins(r_cells[idx], top=30, bottom=30, left=50, right=50)
+            p = r_cells[idx].paragraphs[0]
+            p.paragraph_format.space_before = Pt(2)
+            p.paragraph_format.space_after = Pt(2)
+            p.paragraph_format.line_spacing = 1.05
+            r = p.add_run(text)
+            r.font.size = Pt(8.5)
+            if idx == 0:
+                r.bold = True
+
+    doc.add_heading('3.4 Mekanisme Integrasi ke Ekosistem V-Claim BPJS (Pre-Payment Middleware)', level=2)
+    p_int = doc.add_paragraph(
+        'GARDA-JKN dirancang mengadopsi prinsip Zero-Disruption Integration, beroperasi sebagai Intelligent Pre-Payment Middleware melalui 3 pilar teknis:\n'
+        '1. Web Service Bridging V-Claim (API Interceptor): Beroperasi sebagai middleware pra-pembayaran via RESTful API Bridging resmi BPJS (autentikasi HMAC-SHA256 & enkripsi AES-256). Mencegat klaim saat SIMRS menekan tombol "Kirim Klaim"; klaim wajar lolos instan (<100ms) untuk auto-approval tanpa merombak infrastruktur faskes.\n'
+        '2. Embedded AI Review Panel di Antarmuka Verifikator: Integrasi Micro-Frontend/Webhook memunculkan panel rekomendasi AI langsung di dalam dasbor V-Claim verifikator eksisting. Verifikator menerima transparansi skor SHAP, kutipan pasal PNPK dari Qdrant RAG, dan tombol tindakan hukum satu klik (Setujui / Downgrade / Tolak).\n'
+        '3. Interoperabilitas Data Klinis SatuSehat (HL7 FHIR): Menarik bukti klinis digital terverifikasi (hasil laboratorium kreatinin/troponin, rekam EKG) melalui platform SatuSehat Kemenkes RI (resource Observation dan DiagnosticReport) guna membuktikan keabsahan klaim fiktif secara objektif.'
+    )
+    p_int.paragraph_format.space_after = Pt(4)
+
+    doc.add_page_break()
+
+    # -------------------------------------------------------------
+    # HALAMAN 7 & 8: BAGIAN 4 (PENDEKATAN TEKNIS & DATA)
+    # -------------------------------------------------------------
+    doc.add_heading('Bagian 4: Pendekatan Teknis & Data', level=1)
+    
+    doc.add_heading('A. Sumber & Karakteristik Data (The Golden Dataset)', level=2)
+    doc.add_paragraph(
+        'Dalam membangun fondasi analitik yang kokoh, GARDA-JKN mengintegrasikan data operasional resmi BPJS Kesehatan yang mencakup aspek administratif, finansial, dan klinis:\n'
+        '• Sumber Data Empiris: Menggabungkan data kunjungan FKRTL (202403_fkrtl.dta) untuk variabel biaya dan Length of Stay, dengan data diagnosis sekunder (202405_diagnosissekunder.dta) berbasis nomor kunjungan (FKL02) guna memvalidasi komorbiditas penyerta.\n'
+        '• Strategi Stratified Sampling (5.000 Klaim): Dari total populasi ~4 juta baris klaim, kami mengekstrak 5.000 sampel representatif (The Golden Dataset) yang merepresentasikan proporsi seimbang Rumah Sakit Kelas A, B, C, dan D serta menghindari jebakan extreme class imbalance.'
+    )
+
+    doc.add_heading('B. Metode Pelabelan AI (Semi-Supervised Learning) & Validasi Outlier', level=2)
+    doc.add_paragraph(
+        'Tantangan utama klaim BPJS adalah ketiadaan label biner (ground-truth fraud) pada data mentah. GARDA-JKN mengadopsi paradigma Semi-Supervised Learning dengan mengimplementasikan Stratified Isolation Forest (14 klaster faskes) untuk mendeteksi anomali tanpa bias skala rumah sakit.'
+    )
+
+    doc.add_paragraph(
+        'Berdasarkan visualisasi analitik, sistem berhasil mengklasifikasikan 5.000 klaim mentah ke dalam dua klaster terukur:\n'
+        '• Klaster Inlier (Klaim Normal - 93,0%): Sebanyak 4.651 klaim terkonfirmasi memiliki pola biaya dan durasi rawat yang wajar serta selaras dengan pedoman klinis.\n'
+        '• Klaster Outlier (Indikasi Fraud - 7,0%): Sebanyak 349 klaim berhasil diisolasi sebagai anomali statistik berisiko tinggi yang menjadi target prioritas verifikasi.\n'
+        '• Validasi Realitas Empiris: Rasio temuan anomali 7,0% ini sangat presisi dan konsisten dengan hasil audit KPK dan Kemenkes (2024) yang menaksir kebocoran dana JKN berada pada rentang 5% hingga 10% per tahun.'
+    )
 
     doc.add_heading('C. Bobot Fitur Kritis & Interpretabilitas Model (Explainable AI - SHAP)', level=2)
     doc.add_paragraph(
-        'Guna menjamin akuntabilitas hukum dan mencegah fenomena "Black-Box AI", model Balanced Bagging XGBoost yang dilatih di atas label anomali tersebut dilengkapi dengan modul interpretabilitas SHAP (SHapley Additive exPlanations). Pendekatan ini memungkinkan dokter verifikator memahami persis variabel apa yang memicu kecurigaan sistem:'
+        'Guna mencegah fenomena "Black-Box AI", model Balanced Bagging XGBoost dilengkapi modul interpretabilitas TreeSHAP (SHapley Additive exPlanations). Pendekatan ini memungkinkan verifikator memahami variabel pemicu anomali secara transparan:'
     )
+
     if os.path.exists('docs/evidence/plot_feature_importance.png'):
-        doc.add_picture('docs/evidence/plot_feature_importance.png', width=Inches(4.5))
+        doc.add_picture('docs/evidence/plot_feature_importance.png', width=Inches(4.2))
         last_paragraph = doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_cap = doc.add_paragraph('Gambar 3. Top 5 Fitur Penentu Prediksi Fraud Berdasarkan Analisis Nilai SHAP')
+        p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_cap.runs[0].font.size = Pt(9)
+        p_cap.runs[0].font.italic = True
 
-    doc.add_paragraph('Berdasarkan grafik feature importance SHAP, tiga pemicu utama anomali berkorelasi kuat dengan tipologi fraud di rumah sakit:')
-    doc.add_paragraph('• Biaya Tagih Per Hari (Indikasi Phantom Billing): Deteksi lonjakan tagihan tanpa adanya penambahan hari rawat atau prosedur invasif yang rasional.')
-    doc.add_paragraph('• Durasi Rawat Inap / LOS (Indikasi Manipulasi Hari Rawat): Hari rawat yang melampaui batas deviasi standar klinis PNPK demi menggelembungkan klaim.')
-    doc.add_paragraph('• Diskrepansi Severity Level (Indikasi Upcoding): Pengajuan klaim tingkat keparahan tinggi (Severity III) yang diajukan tanpa adanya bukti diagnosis sekunder yang sah.')
+    doc.add_paragraph(
+        'Tiga pemicu utama anomali berkorelasi kuat dengan tipologi fraud di rumah sakit:\n'
+        '1. Biaya Tagih Per Hari (Indikasi Phantom Billing): Deteksi lonjakan tagihan tanpa adanya penambahan hari rawat atau prosedur invasif yang rasional.\n'
+        '2. Durasi Rawat Inap / LOS (Indikasi Manipulasi Hari Rawat): Hari rawat yang melampaui batas deviasi standar klinis PNPK demi menggelembungkan klaim.\n'
+        '3. Diskrepansi Severity Level (Indikasi Upcoding): Pengajuan klaim tingkat keparahan tinggi (Severity III) yang diajukan tanpa adanya bukti diagnosis sekunder yang sah.'
+    )
 
-    # Bagian 5
+    doc.add_page_break()
+
+    # -------------------------------------------------------------
+    # HALAMAN 9 & 10: BAGIAN 5 (TINGKAT KEMATANGAN, PROTOTYPE & EVALUASI)
+    # -------------------------------------------------------------
     doc.add_heading('Bagian 5: Tingkat Kematangan, Prototype & Bukti Evaluasi (MVP)', level=1)
     
-    doc.add_heading('A. Status Kematangan Sistem (Minimum Viable Product - End-to-End Functional)', level=2)
+    doc.add_heading('A. Status Kematangan Sistem (TRL 6–7 End-to-End Functional)', level=2)
     doc.add_paragraph(
-        'Sistem GARDA-JKN telah melewati fase konseptual awal dan saat ini berstatus Minimum Viable Product (MVP) fungsional penuh (Tingkat Kesiapterapan Teknologi / TRL 6–7). Seluruh subsistem—mulai dari Intake & Security Guardrail, Mesin Skrining XGBoost (Lapis 1), Qdrant Vector Knowledge Base (Lapis 2), LangGraph Clinical Arbiter (Lapis 3), hingga Antarmuka Dasbor Verifikator Next.js—telah terhubung secara end-to-end melalui protokol REST API asynchronous dan Server-Sent Events (SSE):'
-    )
-    doc.add_paragraph('• Kesiapan Sistem (TRL 6–7): Solusi telah berfungsi utuh sebagai platform end-to-end fungsional yang mampu memproses klaim mentah rumah sakit hingga menghasilkan penetapan Berita Acara resmi.')
-    doc.add_paragraph('• Arsitektur Terintegrasi & Asynchronous: Backend FastAPI dan Frontend Next.js berkomunikasi melalui microservice decoupled dengan dukungan real-time streaming event (SSE).')
-    doc.add_paragraph('• Eksekusi Deterministik & Auditabel: Seluruh orkestrasi multi-tahap dikendalikan oleh LangGraph StateGraph guna menjamin eksekusi yang patuh regulasi tanpa risiko infinite loop.')
-
-    doc.add_heading('B. Bukti Kinerja Klasifikasi Machine Learning (Lapis 1)', level=2)
-    doc.add_paragraph(
-        'Untuk memvalidasi keandalan Lapis 1 dalam menyaring anomali berkecepatan tinggi, model Balanced Bagging XGBoost dan Stratified Isolation Forest diuji secara komprehensif menggunakan The Golden Dataset (5.000 data klaim historis riil). Evaluasi difokuskan pada metrik ketahanan data tidak seimbang (imbalanced data metrics) guna memastikan sensitivitas deteksi kecurangan:'
-    )
-    doc.add_paragraph('• Skala Pengujian Empiris: 5.000 data historis klaim riil BPJS Kesehatan yang mencakup representasi berimbang Rumah Sakit Kelas A, B, C, dan D.')
-    doc.add_paragraph('• Area Under Precision-Recall Curve (PR-AUC: 0.9958): Skor PR-AUC dan Average Precision mencapai 0.9958, membuktikan presisi diskriminasi yang luar biasa pada kasus anomali minoritas.')
-    doc.add_paragraph('• Area Under ROC Curve (ROC-AUC: 0.9996): Membuktikan separasi sempurna antara klaim wajar dan klaim anomali tanpa risiko tumpang-tindih klasifikasi.')
-    doc.add_paragraph('• Kinerja Kelas Fraud (F1-Score: 97,14%): Model mencatatkan Precision 97,14% dan Recall 97,14% pada kelas fraud, memastikan klaim manipulatif terisolasi secara efektif.')
-    doc.add_paragraph('• Operational Hit Rate (Precision@100: 70,0%): Dari 100 klaim teratas dengan skor anomali tertinggi, 70 klaim terkonfirmasi nyata memuat fraud saat diaudit.')
-    doc.add_paragraph('• Kecepatan Inferensi Skrining (< 100 milidetik): Waktu komputasi klasifikasi Lapis 1 berlangsung instan, siap menangani ribuan klaim per detik.')
-
-    doc.add_paragraph('Berikut adalah visualisasi Matriks Kebingungan (Confusion Matrix) dan Kurva ROC Lapis 1:')
-    if os.path.exists('docs/evidence/plot_confusion_matrix.png'):
-        doc.add_picture('docs/evidence/plot_confusion_matrix.png', width=Inches(3.2))
-        last_paragraph = doc.paragraphs[-1]
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    if os.path.exists('docs/evidence/plot_roc_curve.png'):
-        doc.add_picture('docs/evidence/plot_roc_curve.png', width=Inches(4.2))
-        last_paragraph = doc.paragraphs[-1]
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    doc.add_paragraph(
-        'Visualisasi Confusion Matrix di atas membuktikan bahwa tingkat False Positive (salah menuduh klaim jujur sebagai fraud) ditekan hingga batas minimal. Hal ini menjamin kelancaran arus kas rumah sakit yang patuh. Kurva ROC yang menempel di batas kiri-atas menegaskan stabilitas generalisasi model di berbagai skenario pembiayaan.'
+        'Sistem GARDA-JKN telah melewati fase konseptual dan saat ini berstatus Minimum Viable Product (MVP) fungsional penuh (Tingkat Kesiapterapan Teknologi / TRL 6–7). Seluruh subsistem—mulai dari Intake & Security Guardrail, Mesin Skrining XGBoost (Lapis 1), Qdrant Vector Knowledge Base (Lapis 2), LangGraph Clinical Arbiter (Lapis 3), hingga Antarmuka Dasbor Verifikator Next.js—telah terhubung secara end-to-end melalui protokol REST API asynchronous dan Server-Sent Events (SSE).'
     )
 
-    doc.add_heading('C. Bukti Evaluasi Penalaran Agentic AI & Anti-Halusinasi (Lapis 2 & 3 - LLMOps DeepEval)', level=2)
+    doc.add_heading('B. Bukti Kinerja Klasifikasi Machine Learning Lapis 1', level=2)
     doc.add_paragraph(
-        'Berbeda dengan implementasi chatbot generik yang rentan mengarang informasi, GARDA-JKN menerapkan framework evaluasi otomatis berstandar industri (DeepEval) untuk mengaudit kebenaran penalaran medis Lapis 2 & 3 berdasarkan kaidah RAG Triad. Hasil evaluasi benchmarking membuktikan kepatuhan klinis mutlak:'
+        'Pengujian empiris pada 5.000 data historis klaim riil BPJS Kesehatan mencatatkan hasil luar biasa:\n'
+        '• PR-AUC Score: 0.9958 (Presisi diskriminasi sangat tinggi pada kelas minoritas anomali).\n'
+        '• ROC-AUC Score: 0.9996 (Separasi hampir sempurna antara klaim wajar dan klaim manipulatif).\n'
+        '• Kinerja Kelas Fraud (F1-Score): 97,14% (Precision 97,14% dan Recall 97,14%).\n'
+        '• Operational Hit Rate (Precision@100): 70,0% (70 dari 100 klaim teratas terkonfirmasi fraud nyata).\n'
+        '• Kecepatan Inferensi Skrining: < 100 milidetik per berkas (siap menangani ribuan klaim per detik).'
     )
-    doc.add_paragraph('• Faithfulness Score (1.00 / 100,0% - Sempurna): Seluruh fakta klinis dan pasal rujukan dalam Berita Acara yang diterbitkan LLM 100% bersumber langsung dari dokumen PNPK Kemenkes RI yang sah (Zero-Hallucination).')
-    doc.add_paragraph('• Answer Relevancy Score (1.00 / 100,0% - Sempurna): Seluruh resume adjudikasi 100% relevan, koheren, dan fokus menjawab anomali diagnosis serta tindakan klaim pasien.')
-    doc.add_paragraph('• Ketahanan Sistem (High-Reliability Fallback): Dilengkapi mekanisme parser deterministik berbasis Regular Expressions untuk menjamin penerbitan draf putusan resmi tetap berjalan jika terjadi kendala koneksi API LLM eksternal.')
+
+    # SIDE-BY-SIDE TABLE: CONFUSION MATRIX & ROC CURVE (Sangat Menghemat Ruang!)
+    if os.path.exists('docs/evidence/plot_confusion_matrix.png') and os.path.exists('docs/evidence/plot_roc_curve.png'):
+        grid_tbl = doc.add_table(rows=1, cols=2)
+        grid_tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
+        c_left = grid_tbl.rows[0].cells[0]
+        c_right = grid_tbl.rows[0].cells[1]
+        c_left.width = Inches(2.9)
+        c_right.width = Inches(3.5)
+        p_l = c_left.paragraphs[0]
+        p_l.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_l.add_run().add_picture('docs/evidence/plot_confusion_matrix.png', width=Inches(2.7))
+        p_r = c_right.paragraphs[0]
+        p_r.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_r.add_run().add_picture('docs/evidence/plot_roc_curve.png', width=Inches(3.3))
+        
+        p_grid_cap = doc.add_paragraph('Gambar 4. Bukti Kinerja Model Lapis 1: Confusion Matrix (Kiri) dan Kurva ROC-AUC 0.9996 (Kanan)')
+        p_grid_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_grid_cap.runs[0].font.size = Pt(9)
+        p_grid_cap.runs[0].font.italic = True
+
+    doc.add_heading('C. Evaluasi Penalaran Agentic AI & Anti-Halusinasi (DeepEval Score 1.00)', level=2)
+    doc.add_paragraph(
+        'Menggunakan framework evaluasi LLM berstandar industri (DeepEval) berbasis kaidah RAG Triad:\n'
+        '• Faithfulness Score (1.00 / 100,0% - Sempurna): Seluruh fakta klinis dan pasal rujukan dalam Berita Acara 100% bersumber langsung dari dokumen PNPK Kemenkes RI (Zero-Hallucination).\n'
+        '• Answer Relevancy Score (1.00 / 100,0% - Sempurna): Seluruh resume adjudikasi 100% relevan, koheren, dan fokus menjawab anomali diagnosis serta tindakan klaim pasien.\n'
+        '• High-Reliability Fallback: Dilengkapi parser deterministik regex untuk menjamin draf putusan tetap terbit jika koneksi API LLM eksternal mengalami gangguan.'
+    )
 
     if os.path.exists('docs/evidence/plot_ai_evaluation.png'):
-        doc.add_picture('docs/evidence/plot_ai_evaluation.png', width=Inches(4.8))
+        doc.add_picture('docs/evidence/plot_ai_evaluation.png', width=Inches(4.2))
         last_paragraph = doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_cap = doc.add_paragraph('Gambar 5. Hasil Uji Anti-Halusinasi DeepEval (Skor Sempurna 100% pada Faithfulness & Relevancy)')
+        p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_cap.runs[0].font.size = Pt(9)
+        p_cap.runs[0].font.italic = True
 
+    doc.add_heading('D. Bukti Integrasi Antarmuka & Uji End-to-End Playwright Testing', level=2)
     doc.add_paragraph(
-        'Capaian skor sempurna (100%) pada metrik Faithfulness dan Answer Relevancy memberikan garansi medikolegal bagi manajemen BPJS Kesehatan bahwa sistem kami tidak akan pernah mengarang aturan medis fiktif yang dapat merugikan pasien maupun faskes.'
+        'Antarmuka dasbor verifikator diwujudkan dalam web modern berbasis Next.js dan Tailwind CSS, diverifikasi secara penuh menggunakan otomasi Playwright Testing (lulus 100% tanpa kendala CORS):'
     )
-
-    doc.add_heading('D. Bukti Integrasi Antarmuka & Uji End-to-End (Next.js VClaim UI & Playwright Testing)', level=2)
-    doc.add_paragraph(
-        'Untuk menjamin kemudahan adopsi oleh verifikator medis BPJS di lapangan, GARDA-JKN mengusung filosofi Human-in-the-Loop yang diwujudkan dalam antarmuka berbasis web modern (Next.js & Tailwind CSS). Seluruh interaksi antarmuka telah diverifikasi menggunakan pengujian otomatis End-to-End Playwright Testing:'
-    )
-    doc.add_paragraph('• Pengujian Otomatis End-to-End (Playwright MCP): Seluruh simulasi klaim—mulai dari input payload, transmisi API, eksekusi state machine, hingga rendering keputusan di peramban—lulus 100% tanpa kendala CORS atau network blocking.')
-    doc.add_paragraph('• Dasbor Verifikator Interaktif (Human-in-the-Loop): Menampilkan ringkasan audit SHAP, dasar hukum PNPK, dan tombol tindakan penetapan putusan hukum (Setujui / Downgrade / Tolak) yang berada di bawah kendali penuh dokter verifikator.')
-    doc.add_paragraph('• Konsol Real-Time Berbasis SSE: Memungkinkan verifikator memantau tahapan audit sistem secara seketika (live-streaming) dengan latensi pemrosesan total di bawah 10 detik per klaim.')
 
     if os.path.exists('docs/evidence/plot_ui_frontend.png'):
-        doc.add_picture('docs/evidence/plot_ui_frontend.png', width=Inches(4.8))
+        doc.add_picture('docs/evidence/plot_ui_frontend.png', width=Inches(4.6))
         last_paragraph = doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_cap = doc.add_paragraph('Gambar 6. Tangkapan Layar Dasbor Verifikator GARDA-JKN Hasil Validasi Playwright End-to-End')
+        p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_cap.runs[0].font.size = Pt(9)
+        p_cap.runs[0].font.italic = True
 
-    doc.add_paragraph(
-        'Bukti tangkapan layar di atas memperlihatkan antarmuka dasbor verifikator yang telah teruji secara live. Desain yang menyerupai SIMRS VClaim eksisting memastikan proses transisi dan adaptasi petugas BPJS dapat berlangsung mulus tanpa friksi operasional.'
-    )
+    doc.add_page_break()
 
-    # Bagian 6
+    # -------------------------------------------------------------
+    # HALAMAN 11: BAGIAN 6 (RENCANA & MODEL BISNIS - VHDIC CANVAS)
+    # -------------------------------------------------------------
     doc.add_heading('Bagian 6: Rencana & Model Bisnis (VHDIC Canvas)', level=1)
     doc.add_paragraph(
-        'Guna memastikan keberlanjutan, kepatuhan regulasi, dan skalabilitas adopsi di ekosistem kesehatan nasional, perancangan GARDA-JKN dipetakan secara holistik menggunakan kerangka VHDIC Canvas (Value, Health Governance, Discovery, Design, dan Delivery):'
+        'Guna memastikan keberlanjutan dan kepatuhan regulasi di ekosistem kesehatan nasional, GARDA-JKN dipetakan secara holistik menggunakan kerangka VHDIC Canvas (Value, Health Governance, Discovery, Design, Delivery):'
     )
 
-    doc.add_heading('A. Pilar Value (Dampak Nilai 5-Dimensi Kesehatan)', level=2)
     doc.add_paragraph(
-        'Pilar Nilai memetakan bagaimana solusi GARDA-JKN menghadirkan manfaat transformatif lintas dimensi pemangku kepentingan dalam ekosistem jaminan kesehatan:'
+        '• 1. Value (Dampak 5 Dimensi): Equity (audit adil 14 strata melindungi RS tipe C/D), Population Health (menjaga solvabilitas kas JKN untuk 270+ juta jiwa), Patient Value (melindungi pasien dari terapi berlebih/fiktif), Provider Value (mempercepat pencairan klaim bersih faskes jujur), dan Cost Efficiency (menutup kebocoran pra-pembayaran).\n'
+        '• 2. Health Governance: Patuh Permenkes No. 16/2019 (Pencegahan Fraud), Permenkes No. 26/2021 (Pedoman INA-CBG), UU PDP No. 27/2022, rujukan resmi PNPK Kemenkes RI, serta enkripsi data AES-256.\n'
+        '• 3. Discovery: Menjawab tantangan kebocoran Rp10–15 Triliun per tahun dan beban verifikator 8–12 juta klaim/bulan. Pengguna inti mencakup Dokter Verifikator BPJS, TKMKB, dan Tim Fraud Internal RS.\n'
+        '• 4. Design: Arsitektur microservice 3-lapis berbasis FastAPI, antarmuka Next.js/React yang intuitif, serta interoperabilitas data SatuSehat Kemenkes (HL7 FHIR).\n'
+        '• 5. Delivery: Roadmap implementasi 3 fase: Fase 1 (Simulasi Lingkungan Tertutup), Fase 2 (Pilot Shadowing di RS Tipe A), dan Fase 3 (Deployment Nasional di Seluruh Kedeputian Wilayah BPJS). Model bisnis berbasis penghematan biaya menghasilkan estimasi ROI sangat positif: mencegah 1% fraud menghemat kas negara Rp100–150 Miliar per tahun.'
     )
-    doc.add_paragraph('• Equity (Ekuitas Layanan): Mencegah diskriminasi terhadap rumah sakit tipe kecil (Kelas C/D dan faskes daerah 3T) melalui mekanisme Stratified Isolation Forest yang mengevaluasi klaim hanya terhadap kelompok rekanan faskes yang setara (peer-group), bukan disamaratakan dengan RS metropolitan.')
-    doc.add_paragraph('• Population Health (Dampak Populasi): Menjaga solvabilitas dan keberlanjutan jangka panjang Dana Jaminan Sosial (DJS) Kesehatan agar tetap mampu menopang Universal Health Coverage bagi 270+ juta rakyat Indonesia.')
-    doc.add_paragraph('• Patient Value (Perlindungan Pasien): Melindungi hak medis pasien dari praktik terapi berlebihan (over-treatment) atau tindakan invasif fiktif, serta mencegah hangusnya kuota/plafon manfaat biaya akibat manipulasi koding.')
-    doc.add_paragraph('• Provider Value (Kelancaran Faskes): Mempercepat arus kas (cash flow) faskes yang jujur, di mana klaim bersih (Inlier wajar) langsung diproses Auto-Approval dalam hitungan detik tanpa tertahan antrean audit manual.')
-    doc.add_paragraph('• Cost Efficiency (Efisiensi Finansial): Menekan beban operasional audit manual BPJS, meminimalisir sengketa biaya (dispute klaim), dan menutup celah kebocoran dana secara pre-payment.')
 
-    doc.add_heading('B. Pilar Health Governance (Tata Kelola Regulasi, Klinis & Data)', level=2)
-    doc.add_paragraph(
-        'Tata kelola GARDA-JKN dirancang dengan standar kepatuhan hukum dan etika medis tertinggi untuk menjamin legitimasi setiap putusan adjudikasi:'
-    )
-    doc.add_paragraph('• Kepatuhan Regulasi (Regulatory Governance): Patuh penuh pada Permenkes No. 16/2019 tentang Pencegahan Fraud JKN, Permenkes No. 26/2021 (Pedoman INA-CBG), UU Kesehatan No. 17/2023, dan standar audit klaim BPJS Kesehatan.')
-    doc.add_paragraph('• Tata Kelola Klinis (Clinical Governance): Bersandar mutlak pada Pedoman Nasional Pelayanan Kedokteran (PNPK) Kemenkes RI, KMK Pedoman Praktik Klinis, dan konsensus profesi medis (KDIGO, PERKI, PAPDI).')
-    doc.add_paragraph('• Tata Kelola Data & Privasi (Data Governance): Implementasi Zero-Knowledge Privacy Masking yang patuh UU PDP No. 27/2022. Identitas NIK dan nama pasien disensor otomatis sebelum diproses model, didukung enkripsi data berstandar AES-256.')
-    doc.add_paragraph('• Tata Kelola Teknologi (Technical Governance): Orkestrasi deterministik berbasis LangGraph StateGraph (bebas infinite loop), Model Registry versi terkelola, audit trail TreeSHAP, dan modul pertahanan Prompt Injection Guardrail.')
+    doc.add_page_break()
 
-    doc.add_heading('C. Pilar Discovery (Tantangan Masalah & Pemangku Kepentingan)', level=2)
-    doc.add_paragraph(
-        'Pilar Penemuan mengidentifikasi akar permasalahan di lapangan serta memetakan entitas pengguna yang berinteraksi langsung dengan solusi:'
-    )
-    doc.add_paragraph('• Tantangan Utama (Challenge): Kebocoran dana JKN sebesar 5%–10% (Rp10–15 Triliun per tahun) akibat Upcoding, Phantom Billing, dan Readmisi, diperparah beban kerja verifikator 8–12 juta klaim per bulan dengan batas SLA 15 hari.')
-    doc.add_paragraph('• Pengguna Inti (Users): Dokter Verifikator Medis BPJS Kesehatan di Kantor Cabang/Kedeputian Wilayah, Tim Kendali Mutu dan Kendali Biaya (TKMKB), serta Tim Pencegahan Kecurangan internal Rumah Sakit.')
-    doc.add_paragraph('• Pemangku Kepentingan (Stakeholders): Direksi dan Dewan Pengawas BPJS Kesehatan, Kementerian Kesehatan RI, KPK, BPK, Asosiasi Rumah Sakit (PERSI), organisasi profesi dokter, dan seluruh rakyat peserta JKN.')
-
-    doc.add_heading('D. Pilar Design (Arsitektur Solusi & Interoperabilitas)', level=2)
-    doc.add_paragraph(
-        'Rancang bangun sistem mengedepankan arsitektur modular yang adaptif terhadap infrastruktur teknologi informasi kesehatan nasional:'
-    )
-    doc.add_paragraph('• Arsitektur Microservice 3-Lapis: Pemisahan tugas berjenjang yang mencakup Skrining Cepat XGBoost (Lapis 1), Mesin Vektor Qdrant RAG (Lapis 2), dan LangGraph Clinical Arbiter LLM (Lapis 3).')
-    doc.add_paragraph('• Desain Pengalaman Pengguna (UX Design): Dasbor Next.js modern yang mengadopsi alur SIMRS VClaim eksisting, dilengkapi transparansi TreeSHAP, sitasi regulasi PNPK, dan tombol putusan interaktif Human-in-the-Loop via SSE.')
-    doc.add_paragraph('• Desain Integrasi (Interoperability): Komunikasi melalui RESTful API asynchronous yang siap dihubungkan (bridging) langsung dengan sistem V-Claim, E-Klaim INA-CBG, dan Rekam Medis Elektronik (RME) berstandar HL7 FHIR.')
-
-    doc.add_heading('E. Pilar Delivery (Validasi Bukti, Skalabilitas & Model Bisnis)', level=2)
-    doc.add_paragraph(
-        'Strategi implementasi memadukan bukti empiris yang teruji dengan model keberlanjutan finansial yang sangat efisien bagi BPJS Kesehatan:'
-    )
-    doc.add_paragraph('• Bukti Validasi Kematangan (Evidence): Teruji pada 5.000 klaim historis dengan PR-AUC 0.9958, ROC-AUC 0.9996, F1-Score 97,14%, Precision@100 70,0%, serta evaluasi anti-halusinasi DeepEval bernilai sempurna 100%.')
-    doc.add_paragraph('• Rencana Skalabilitas (Scale): Peta jalan 3 fase yang terukur: Fase 1 (Simulasi lingkungan tertutup), Fase 2 (Pilot implementasi live-shadowing di RS Rujukan Tipe A), dan Fase 3 (Deployment skala nasional di seluruh Kedeputian Wilayah BPJS).')
-    doc.add_paragraph('• Model Bisnis Berbasis Penghematan (Value-Based Cost Saving): Dengan estimasi biaya komputasi server cloud yang sangat minim (< Rp100 juta/tahun), keberhasilan GARDA-JKN dalam mencegah 1% saja dari total potensi fraud nasional berpotensi menghemat kas negara sebesar Rp100 hingga Rp150 Miliar per tahun (Return on Investment / ROI ekstrem positif).')
-
-    # Bagian 7
+    # -------------------------------------------------------------
+    # HALAMAN 12: BAGIAN 7 (DAMPAK & NILAI TRANSFORMASI)
+    # -------------------------------------------------------------
     doc.add_heading('Bagian 7: Dampak & Nilai Transformasi', level=1)
-    doc.add_paragraph(
-        'Implementasi GARDA-JKN membawa dampak transformatif yang fundamental pada ekosistem Jaminan Kesehatan Nasional, mengubah paradigma verifikasi klaim dari proses administratif manual yang melelahkan menjadi ekosistem audit cerdas berbasis bukti klinis:'
-    )
-
-    doc.add_heading('A. Transformasi SDM Verifikator (Dari Pekerja Klerikal Menjadi Medical Investigator)', level=2)
-    doc.add_paragraph(
-        'Saat ini, sekitar 1.500 hingga 2.000 staf verifikator BPJS Kesehatan di seluruh Indonesia menanggung beban kerja kognitif yang ekstrem, di mana satu orang verifikator rata-rata harus meneliti 3.500 hingga 5.000+ berkas klaim per bulan. Keterbatasan waktu memaksa mereka terjebak dalam pekerjaan klerikal mekanis (mencocokkan baris tabel dan berkas PDF secara terburu-buru), yang memicu tingginya risiko kelelahan keputusan (decision fatigue) dan human error.'
-    )
-    doc.add_paragraph('• Eliminasi Rutinitas Klerikal (70%–80% Auto-Approval): Dengan kemampuan skrining cerdas Lapis 1, klaim bersih yang terbukti wajar langsung diloloskan secara otomatis, membebaskan verifikator dari tugas repetitif bernilai rendah.')
-    doc.add_paragraph('• Elevasi Peran Menjadi "Clinical Adjudication Analyst": Verifikator BPJS naik kelas menjadi auditor investigatif tingkat lanjut. Waktu dan keahlian klinis mereka dialokasikan khusus untuk membedah 15%–20% kasus berisiko tinggi (status ESCALATED) yang membutuhkan analisis medikolegal mendalam.')
-    doc.add_paragraph('• Pemberdayaan Keputusan (Human-in-the-Loop): Didukung audit trail TreeSHAP dan sitasi pasal PNPK Kemenkes otomatis, dokter verifikator memiliki amunisi bukti yang kuat saat harus melakukan konfirmasi atau pembatalan klaim tanpa rasa ragu.')
-
-    doc.add_heading('B. Akselerasi Kecepatan Operasional (Kompresi Waktu dari Menit ke Detik)', level=2)
-    doc.add_paragraph(
-        'Berdasarkan studi Time and Motion di berbagai rumah sakit, verifikasi manual satu berkas rawat inap membutuhkan waktu 15 hingga 25 menit. Dengan volume 7 hingga 8,5 juta klaim FKRTL per bulan secara nasional, proses manual menciptakan kemacetan operasional (bottleneck) yang sangat parah.'
-    )
-    doc.add_paragraph('• Kompresi Waktu Audit (>95% Peningkatan Kecepatan): GARDA-JKN memangkas durasi evaluasi per klaim dari 15–25 menit menjadi di bawah 10 detik per berkas dengan presisi mesin.')
-    doc.add_paragraph('• Cakupan Audit Penuh (100% Full-Population Pre-Payment Audit): Beralih dari metode konvensional yang hanya sanggup melakukan uji petik (sampling) 5%–10% berkas pasca-bayar, GARDA-JKN memungkinkan audit menyeluruh pada 100% populasi klaim secara real-time sebelum dana dicairkan.')
-    doc.add_paragraph('• Kepatuhan Mutlak Batas Waktu SLA 15 Hari: Menghilangkan risiko keterlambatan pembayaran klaim tanpa membebani verifikator dengan jam lembur berlebih.')
-
-    doc.add_heading('C. Dampak Multi-Penerima Manfaat (The Tri-Benefit Ecosystem)', level=2)
-    doc.add_paragraph(
-        'GARDA-JKN menciptakan sinergi nilai positif bagi seluruh pilar pemangku kepentingan kesehatan nasional:'
-    )
-    doc.add_paragraph('• Dampak bagi BPJS Kesehatan: Menutup celah kebocoran anggaran Rp10–15 Triliun per tahun secara pre-payment, menekan potensi defisit Dana Jaminan Sosial (DJS), dan membangun kredibilitas audit yang transparan di hadapan BPK dan KPK.')
-    doc.add_paragraph('• Dampak bagi Rumah Sakit / FKRTL: Melindungi likuiditas arus kas faskes (di mana 65%–85% revenue RS bergantung pada klaim BPJS). Klaim bersih cair tepat waktu, menekan dispute klaim dari 10%–15% menjadi <2%, serta membebaskan RS dari beban bunga talangan Supply Chain Financing (SCF) perbankan.')
-    doc.add_paragraph('• Dampak bagi Peserta / Masyarakat: Melindungi pasien dari potensi tindakan medis berlebihan (over-treatment) atau prosedur invasif fiktif yang membahayakan keselamatan, serta menjamin kesinambungan hak jaminan kesehatan semesta (UHC) bagi 270+ juta rakyat Indonesia.')
-
-    doc.add_heading('D. Matriks Komparasi Transformasi: Sebelum vs Sesudah GARDA-JKN', level=2)
     
-    # Table creation
-    table = doc.add_table(rows=1, cols=3)
-    table.style = 'Light Shading Accent 1'
-    hdr_cells = table.rows[0].cells
-    hdr_cells[0].text = 'Dimensi Evaluasi'
-    hdr_cells[1].text = 'Sebelum (Metode Manual)'
-    hdr_cells[2].text = 'Sesudah (GARDA-JKN)'
-    
+    doc.add_paragraph(
+        'Implementasi GARDA-JKN mengubah paradigma audit klaim dari proses administratif manual yang melelahkan menjadi ekosistem audit cerdas berbasis bukti klinis:\n'
+        '• Transformasi SDM Verifikator: Mengeliminasi 70%–80% tugas klerikal repetitif melalui Auto-Approval klaim bersih. Verifikator BPJS naik kelas menjadi Clinical Adjudication Analyst yang fokus membedah 15%–20% kasus berisiko tinggi (status ESCALATED) dengan dukungan bukti pasal PNPK otomatis.\n'
+        '• Akselerasi Kecepatan Operasional: Memangkas durasi evaluasi dari 15–25 menit menjadi di bawah 10 detik per berkas. Menggeser metode konvensional dari uji petik 5%–10% pasca-bayar menjadi 100% Full-Population Pre-Payment Audit sebelum dana dicairkan, menjamin kepatuhan batas SLA 15 hari.'
+    )
+
+    doc.add_paragraph(
+        'Dampak Multi-Penerima Manfaat (The Tri-Benefit Ecosystem):\n'
+        '1. Bagi BPJS Kesehatan: Menutup celah kebocoran anggaran Rp10–15 Triliun per tahun secara pre-payment, menekan potensi defisit DJS, dan membangun akuntabilitas audit di hadapan BPK dan KPK.\n'
+        '2. Bagi Rumah Sakit (FKRTL): Menjaga likuiditas arus kas faskes, menekan sengketa (dispute) klaim dari 10%–15% menjadi <2%, serta membebaskan RS dari beban bunga talangan Supply Chain Financing (SCF).\n'
+        '3. Bagi Peserta JKN: Melindungi pasien dari prosedur terapi berlebihan atau invasif fiktif demi keselamatan pasien.'
+    )
+
+    doc.add_heading('Matriks Komparasi Transformasi: Sebelum vs Sesudah GARDA-JKN', level=2)
+    impact_table = doc.add_table(rows=1, cols=3)
+    impact_table.style = 'Light Shading Accent 1'
+    i_hdr = impact_table.rows[0].cells
+    i_hdr[0].text = 'Dimensi Evaluasi'
+    i_hdr[1].text = 'Sebelum (Metode Manual)'
+    i_hdr[2].text = 'Sesudah (GARDA-JKN)'
+
     comp_data = [
         ('Waktu Verifikasi Per Berkas', '15 – 25 menit (Rawat Inap)', 'Di bawah 10 detik per berkas'),
-        ('Cakupan Audit Klaim', 'Sampling 5% – 10% berkas', '100% Populasi Klaim (Pre-Payment)'),
-        ('Rasio Sengketa / Dispute Klaim', 'Tinggi (10% – 15% tertahan)', 'Sangat Rendah (< 2% terisolasi)'),
-        ('Beban Kerja Verifikator', 'Klerikal mekanis (3.500+ klaim/bulan)', 'Auditor Klinis Kasus Kompleks'),
-        ('Arus Kas (Cash Flow) Rumah Sakit', 'Tertunda 30–60 hari (Beban bunga SCF)', 'Pasti & Tepat Waktu (< 15 hari SLA)'),
-        ('Kepatuhan Regulasi Medis', 'Rentan human error & beda persepsi', '100% Rujukan Otentik PNPK Kemenkes')
+        ('Cakupan Audit Klaim', 'Sampling 5% – 10% pasca-bayar', '100% Populasi Klaim (Pre-Payment)'),
+        ('Rasio Sengketa / Dispute', 'Tinggi (10% – 15% tertahan)', 'Sangat Rendah (< 2% terisolasi)'),
+        ('Beban Kerja Verifikator', 'Klerikal mekanis (3.500+ berkas/bln)', 'Auditor Klinis Kasus Kompleks'),
+        ('Arus Kas (Cash Flow) RS', 'Tertunda 30–60 hari (Beban bunga SCF)', 'Pasti & Tepat Waktu (< 15 hari SLA)'),
+        ('Kepatuhan Regulasi Medis', 'Rentan human error & persepsi beda', '100% Rujukan Otentik PNPK Kemenkes')
     ]
-    
     for dim, bef, aft in comp_data:
-        row_cells = table.add_row().cells
-        row_cells[0].text = dim
-        row_cells[1].text = bef
-        row_cells[2].text = aft
+        r_cells = impact_table.add_row().cells
+        r_cells[0].text = dim
+        r_cells[1].text = bef
+        r_cells[2].text = aft
 
-    # Bagian 8
+    doc.add_page_break()
+
+    # -------------------------------------------------------------
+    # HALAMAN 13: BAGIAN 8 (RISIKO, PRIVASI & ETIKA)
+    # -------------------------------------------------------------
     doc.add_heading('Bagian 8: Risiko, Privasi & Etika', level=1)
     doc.add_paragraph(
-        'Penerapan AI pada data jaminan kesehatan publik menuntut tanggung jawab etis dan kepatuhan hukum tanpa kompromi. '
-        'GARDA-JKN dibangun berlandaskan prinsip Privacy-by-Design, kepatuhan penuh terhadap UU PDP No. 27/2022, '
+        'Penerapan AI pada data kesehatan menuntut kepatuhan etis dan hukum tanpa kompromi. '
+        'GARDA-JKN dibangun berlandaskan prinsip Privacy-by-Design, kepatuhan penuh UU PDP No. 27/2022, '
         'dan tata kelola Human-Centric AI.'
     )
 
-    doc.add_heading('A. Perlindungan Data Pribadi (Kepatuhan UU PDP No. 27/2022)', level=2)
     doc.add_paragraph(
-        '• Zero-Knowledge Privacy Masking: Seluruh PII (Nama Pasien, NIK, No. Kartu BPJS) disensor otomatis di pintu awal ([DISENSOR_UNTUK_PRIVASI]) sebelum berkas dialirkan ke model AI. Model hanya memproses kode diagnosis (ICD-10/ICD-9-CM) dan data numerik.\n'
-        '• Pemrosesan Nir-Jejak (Ephemeral Processing): Analisis LLM bersifat stateless tanpa menyimpan rekam medis di cloud publik (Zero Data Retention), mencegah kebocoran data privat pasien ke pihak ketiga.\n'
-        '• Enkripsi Berlapis (At-Rest & In-Transit): Seluruh komunikasi API diamankan dengan protokol TLS 1.3 mTLS dan penyimpanan basis data menggunakan enkripsi standar militer AES-256.'
+        '• Perlindungan Data Pribadi (UU PDP No. 27/2022): Zero-Knowledge Privacy Masking menyensor seluruh PII (Nama Pasien, NIK, No. Kartu BPJS) di pintu awal ([DISENSOR_UNTUK_PRIVASI]). Analisis LLM bersifat ephemeral (zero data retention tanpa menyimpan data di server eksternal), dan transmisi diamankan protokol TLS 1.3 mTLS serta enkripsi basis data AES-256.\n'
+        '• Mitigasi Bias Algoritma (14 Strata Faskes): Baseline audit dibagi ke dalam 14 strata faskes (RS Tipe A, B, C, D dan regional). Pola klaim RS tipe C/D atau daerah 3T hanya dibandingkan terhadap faskes setara (peer-group), bukan diadili memakai standar RS rujukan nasional metropolitan. Batas anomali diatur ketat; zona ambigu (skor 0.65 – 0.85) dialihkan ke verifikator manusia.\n'
+        '• Tata Kelola Human-in-the-Loop: GARDA-JKN beroperasi murni sebagai Clinical Decision Support System (CDSS) dan dilarang keras menolak klaim secara sepihak (Zero Autonomous Auto-Rejection). Dokter Verifikator memegang hak veto mutlak (Two-Person Verification Rule) dengan dukungan transparansi TreeSHAP dan sitasi resmi PNPK Kemenkes.'
     )
 
-    doc.add_heading('B. Mitigasi Bias Algoritma & Batasan Operasional AI', level=2)
-    doc.add_paragraph(
-        '• Nir-Bias Skala Faskes (Stratified 14 Strata): Algoritma Lapis 1 membagi tolok ukur ke dalam 14 strata faskes (RS Tipe A, B, C, D dan regional). Pola klaim RS tipe C/D atau daerah 3T hanya dibandingkan terhadap faskes setara (peer-group), bukan diadili memakai standar RS rujukan nasional metropolitan.\n'
-        '• Batas Probabilitas & Eskalasi Cerdas: Sistem memiliki ambang batas ketat (Hard Anomaly Threshold). Jika skor berada di zona ambigu (0.65 - 0.85) atau menghadapi penyakit langka, sistem secara sadar menolak memutus sepihak dan langsung mengalihkan berkas ke verifikator manusia.'
-    )
-
-    doc.add_heading('C. Peran Manusia dalam Keputusan (Human-in-the-Loop Governance)', level=2)
-    doc.add_paragraph(
-        '• Sistem Pendukung, Bukan Hakim Otonom: GARDA-JKN berfungsi murni sebagai Clinical Decision Support System (CDSS). Sistem dilarang keras menolak klaim secara sepihak (Zero Autonomous Auto-Rejection).\n'
-        '• Hak Veto Mutlak Dokter Verifikator: Seluruh penolakan klaim wajib ditandatangani dan diputus secara sah oleh Dokter Verifikator BPJS melalui antarmuka V-Claim (Two-Person Verification Rule).\n'
-        '• Transparansi Bukti Hukum (Explainable AI): Setiap klaim yang ditandai selalu disertai kode alasan TreeSHAP dan kutipan eksak bab, tabel, dan halaman resmi dari PNPK Kemenkes RI, menjamin akuntabilitas medikolegal di hadapan TKMKB.'
-    )
-
-    doc.add_heading('D. Matriks Penilaian & Mitigasi Risiko Kritis (Tabel 30 Detik Baca)', level=2)
+    doc.add_heading('Matriks Penilaian & Mitigasi Risiko Kritis', level=2)
     risk_table = doc.add_table(rows=1, cols=4)
     risk_table.style = 'Light Shading Accent 1'
     r_hdr = risk_table.rows[0].cells
     r_hdr[0].text = 'Kategori Risiko'
-    r_hdr[1].text = 'Identifikasi Potensi Ancaman'
+    r_hdr[1].text = 'Potensi Ancaman'
     r_hdr[2].text = 'Tingkat'
     r_hdr[3].text = 'Strategi Mitigasi Teruji GARDA-JKN'
 
     risks = [
         (
-            'Manipulasi Teks Medis (Prompt Injection)',
-            'Faskes menyisipkan teks manipulatif pada resume medis guna memperdaya LLM agar klaim lolos.',
+            'Manipulasi Teks (Prompt Injection)',
+            'Faskes menyisipkan teks instruksi pada resume medis guna mengecoh LLM agar klaim lolos.',
             'Tinggi',
-            'Security Guardrail Node: Sanitasi regex & validasi skema semantik ketat di gerbang awal sebelum teks disentuh LLM.'
+            'Security Guardrail Node: Sanitasi regex & validasi skema semantik ketat sebelum teks disentuh LLM.'
         ),
         (
             'Halusinasi Regulasi Medis LLM',
             'AI mengarang aturan klinis fiktif yang merugikan faskes atau membahayakan pasien.',
             'Tinggi',
-            'Constrained Qdrant RAG: Parameter suhu temp=0.0, dikunci hanya merujuk PDF PNPK resmi Kemenkes (DeepEval 100% Faithfulness).'
+            'Constrained Qdrant RAG: Suhu temp=0.0 dikunci hanya merujuk PDF resmi PNPK (DeepEval 100% Faithfulness).'
         ),
         (
             'Alarm Palsu (False Positive Dispute)',
-            'Klaim RS patuh tertuduh fraud sehingga mengganggu arus kas faskes dan memicu konflik hukum.',
+            'Klaim RS patuh tertuduh fraud sehingga mengganggu arus kas dan kemitraan rumah sakit.',
             'Sedang',
-            'Zero Auto-Reject & Sanggah 14 Hari: Sistem tidak pernah menolak sepihak; RS berhak unggah berkas penunjang tandingan via V-Claim.'
+            'Zero Auto-Reject & Sanggah 14 Hari: Sistem tidak pernah menolak sepihak; RS berhak unggah sanggahan via V-Claim.'
         ),
         (
             'Latensi Jaringan & Biaya Token API',
-            'Lonjakan volume klaim atau kendala jaringan cloud mengganggu kelancaran antrean verifikasi.',
+            'Lonjakan volume klaim atau latensi cloud mengganggu kelancaran antrean verifikasi.',
             'Sedang',
-            'Offline Fallback Architecture: Lapis 1 (Heuristik & XGBoost) dapat berjalan mandiri secara offline di server lokal (<10 milidetik).'
+            'Offline Fallback Architecture: Lapis 1 (Heuristik & XGBoost) dapat berjalan mandiri secara offline di server lokal (<10ms).'
         )
     ]
 
@@ -401,43 +575,48 @@ def create_docx():
         r_cells[2].text = lvl
         r_cells[3].text = mit
 
-    # Bagian 9
+    doc.add_page_break()
+
+    # -------------------------------------------------------------
+    # HALAMAN 14: BAGIAN 9 (PROFIL PENGEMBANG & REKAM JEJAK EKSEKUSI)
+    # -------------------------------------------------------------
     doc.add_heading('Bagian 9: Profil Pengembang & Rekam Jejak Eksekusi', level=1)
     doc.add_paragraph(
         'Inovasi GARDA-JKN dirancang, dikembangkan, dan divalidasi secara mandiri oleh Inovator Tunggal '
         '(Solo Innovator & Fullstack AI Architect). Kemandirian eksekusi ini membuktikan penguasaan komprehensif atas '
-        'seluruh spektrum rekayasa teknologi dan domain informatika kesehatan tanpa hambatan koordinasi (End-to-End Ownership):'
+        'seluruh spektrum rekayasa teknologi dan domain informatika kesehatan tanpa hambatan birokrasi komunikasi (End-to-End Ownership):'
     )
     
     doc.add_heading('A. Identitas Inovator & Kredensial Akademik', level=2)
     doc.add_paragraph(
         '• Nama Lengkap: Wahyu Maulana Ishaq\n'
-        '• Peran: Lead Fullstack AI Engineer & Health Informatics Specialist\n'
-        '• Institusi & Pendidikan: Mahasiswa S1 Informatika (Peminatan Data Science), Universitas Alma Ata, Yogyakarta (IPK: 3.84 / 4.00).\n'
-        '• Relevansi Studi & Kompetensi Medis: Telah menempuh kurikulum spesifik Electronic Health Records (EHR), Natural Language Processing (NLP), Machine Learning, Deep Learning, dan Visualisasi Data Medis.'
+        '• Peran Proyek: Lead Fullstack AI Engineer & Health Informatics Specialist\n'
+        '• Pendidikan: Mahasiswa S1 Informatika (Peminatan Data Science), Universitas Alma Ata, Yogyakarta (IPK: 3.84 / 4.00).\n'
+        '• Relevansi Studi & Kompetensi Medis: Telah menempuh kurikulum spesifik Electronic Health Records (EHR), Natural Language Processing (NLP), Machine Learning, Deep Learning, dan Visualisasi Data Medis.\n'
+        '• Kontak & Tautan Profesional: GitHub (github.com/wmaulanaaishq) | LinkedIn (linkedin.com/in/wahyu-maulana-ishaq) | Email (maulaishaq1@gmail.com)'
     )
 
     doc.add_heading('B. Rekam Jejak Teruji dalam AI Kesehatan (Clinical Decision Support)', level=2)
     doc.add_paragraph(
-        '• Pengembang AegisMDT AI Agent (Hackathon Project 2026): Mengembangkan purwarupa Multi-Agent Oncology Decision Support berbasis Python/FastAPI yang mengorkestrasi agen patologi, onkologi, dan prognostik melalui alur konsensus berjenjang, RAG dokumen klinis, serta Human-in-the-Loop revision.\n'
-        '• Pengembang GARDA-JKN (BPJS Healthkathon 2026): Mengembangkan sistem adjudikasi klaim pre-payment 3-Lapis end-to-end, mulai dari pemrosesan 5.000 data historis klaim, Vector DB Qdrant berstandar PNPK, hingga pengujian otomatis Playwright E2E dan DeepEval (Faithfulness 1.00).'
+        '• Pengembang AegisMDT AI Agent (Hackathon Project 2026): Merancang dan mengimplementasikan purwarupa Multi-Agent Oncology Decision Support berbasis Python/FastAPI yang mengorkestrasi agen patologi, onkologi, dan prognostik melalui alur konsensus berjenjang, RAG dokumen klinis, serta Human-in-the-Loop revision.\n'
+        '• Pengembang Utama GARDA-JKN (BPJS Healthkathon 2026): Mengeksekusi sistem adjudikasi klaim pra-pembayaran 3-Lapis end-to-end secara mandiri, mulai dari pengolahan 5.000 data klaim BPJS Kesehatan, Vector DB Qdrant berstandar PNPK Kemenkes, hingga pengujian otomatis Playwright E2E dan DeepEval (Faithfulness 1.00).'
     )
 
     doc.add_heading('C. Pelatihan Internasional & Pengalaman Tata Kelola AI Industri', level=2)
     doc.add_paragraph(
-        '• Alumnus AI & Data Science Program — Matsuo Iwasawa Lab, The University of Tokyo (2026): Menyelesaikan program intensif machine learning; merancang pipeline klasifikasi tabular (LightGBM, XGBoost, CatBoost), Optuna hyperparameter tuning, dan Explainable AI (SHAP) dengan simulasi dampak finansial bernilai $11.4 Juta.\n'
+        '• Alumnus AI & Data Science Program — Matsuo Iwasawa Lab, The University of Tokyo (2026): Menyelesaikan program intensif machine learning tingkat lanjut; merancang pipeline klasifikasi tabular (LightGBM, XGBoost, CatBoost), Optuna tuning, dan Explainable AI (SHAP) dengan simulasi dampak finansial bernilai $11.4 Juta.\n'
         '• Data Annotator (Remote Freelance) — Uber AI Solutions (Des 2025 – Sekarang): Terlibat langsung dalam evaluasi output LLM melalui Reinforcement Learning from Human Feedback (RLHF), preference ranking, dan response quality assessment guna menjamin keandalan dan alignment model AI.'
     )
 
-    doc.add_heading('D. Prestasi & Rekognisi Eksekusi Cepat', level=2)
+    doc.add_heading('D. Prestasi Kompetisi & Ketangkasan Eksekusi (Agility)', level=2)
     doc.add_paragraph(
-        '• 5x Hacker Badge di Lablab.ai (Global AI Hackathon Platform): Terbukti memiliki ketangkasan (agility) tinggi dalam membangun dan meluncurkan produk AI fungsional dalam batasan waktu kompetisi yang ketat.\n'
-        '• Juara Best Proposal — PKM Idea Competition 2025 (Universitas Alma Ata): Rekam jejak teruji dalam merumuskan proposal inovasi ilmiah yang terstruktur, berdampak tinggi, dan memenuhi standar metodologi riset formal.'
+        '• 5x Hacker Badge di Lablab.ai (Global AI Hackathon Platform): Terbukti memiliki ketangkasan (agility) tinggi dalam membangun dan meluncurkan produk AI fungsional dalam batasan waktu kompetisi global yang ketat.\n'
+        '• Juara Best Proposal — PKM Idea Competition 2025 (Universitas Alma Ata): Memiliki rekam jejak teruji dalam merumuskan proposal inovasi ilmiah yang terstruktur, berdampak tinggi, dan memenuhi standar metodologi riset formal.'
     )
     
     # Save document
     doc.save('docs/Proposal_Healthkathon_2026_GARDA_JKN.docx')
-    print('Telah berhasil digenerate docs/Proposal_Healthkathon_2026_GARDA_JKN.docx')
+    print('Telah berhasil digenerate docs/Proposal_Healthkathon_2026_GARDA_JKN.docx (Layout 14 Halaman Optimal)')
 
 if __name__ == "__main__":
     create_docx()
