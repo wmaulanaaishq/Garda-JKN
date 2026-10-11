@@ -31,10 +31,10 @@ def create_docx():
                       '3. Arsitektur Pra-Pembayaran Nir-Friksi (Zero-Disruption Middleware): Beroperasi sebagai middleware cerdas yang terhubung langsung ke Web Service V-Claim BPJS Kesehatan, menyelesaikan adjudikasi dalam hitungan detik tanpa merombak sistem eksisting, sekaligus menjamin kendali hukum tetap berada di tangan Dokter Verifikator (Human-in-the-Loop).')
     
     doc.add_paragraph('D. Profil Pengembang & Kapabilitas Eksekusi End-to-End (Solo Innovator)\n'
-                      'Sistem GARDA-JKN dirancang, dibangun, dan diuji secara mandiri oleh Inovator Tunggal (Solo Developer & Fullstack AI Architect) yang menguasai seluruh spektrum teknis dan domain kesehatan secara komprehensif (End-to-End Execution Capability):\n'
-                      '• Rekayasa Kecerdasan Artifisial & Data Science: Mengembangkan pemodelan deteksi anomali (Stratified Isolation Forest), klasifikasi supervised (XGBoost pada 5.000 data klaim), rekayasa basis data vektor Qdrant, serta orkestrasi multi-agen LangGraph.\n'
-                      '• Arsitektur Perangkat Lunak & Integrasi Sistem: Membangun microservice pre-payment middleware (FastAPI), perancangan bridging API V-Claim BPJS Kesehatan, pengembangan dashboard interaktif verifikator (Next.js/React), dan otomasi pengujian sistem (Playwright E2E).\n'
-                      '• Domain Klinis & Kepatuhan Regulasi Kesehatan: Merumuskan Fraud Control Matrix berstandar INA-CBG, kurasi ontologi medis PNPK Kemenkes RI, serta pengujian mutu inferensi bebas halusinasi menggunakan framework DeepEval.')
+                      'Sistem GARDA-JKN dirancang, dibangun, dan diuji secara mandiri oleh Inovator Tunggal: Wahyu Maulana Ishaq (Solo Developer & Fullstack AI Architect), mahasiswa S1 Informatika Universitas Alma Ata (Peminatan Data Science, IPK 3.84/4.00) dengan keahlian multidisipliner yang mencakup seluruh spektrum sistem:\n'
+                      '• Rekayasa AI & Data Science: Pemodelan Stratified Isolation Forest (14 strata) dan XGBoost terlatih pada 5.000 data historis klaim, basis data vektor Qdrant, serta orkestrasi penalaran multi-agen LangGraph.\n'
+                      '• Arsitektur Perangkat Lunak & Integrasi: Microservice FastAPI, integrasi bridging API V-Claim BPJS Kesehatan, dashboard antarmuka Next.js/React, dan otomasi pengujian sistem Playwright E2E.\n'
+                      '• Domain Klinis & Regulasi Medis: Pemodelan aturan INA-CBG, kurasi ontologi medis PNPK Kemenkes RI, serta penjaminan mutu inferensi bebas halusinasi menggunakan framework DeepEval (skor 1.00).')
     
     # Bagian 2
     doc.add_heading('Bagian 2: Masalah & Urgensi', level=1)
@@ -403,15 +403,37 @@ def create_docx():
 
     # Bagian 9
     doc.add_heading('Bagian 9: Profil Pengembang & Rekam Jejak Eksekusi', level=1)
-    doc.add_paragraph('Inovasi GARDA-JKN dirancang, dikembangkan, dan divalidasi secara mandiri oleh Inovator Tunggal (Solo Innovator & Fullstack AI Architect). Kemandirian eksekusi ini membuktikan penguasaan komprehensif atas seluruh spektrum rekayasa teknologi dan tata kelola jaminan kesehatan (End-to-End Ownership):\n'
-                      '• Inovator & Arsitek Sistem: [Nama Lengkap Anda]\n'
-                      '  - Peran: Lead Fullstack AI Engineer & Health Informatics Specialist\n'
-                      '  - Keahlian Inti: Machine Learning Modeling, Agentic AI Architecture, Enterprise REST API Integration, dan Health Regulation Modeling.\n'
-                      '  - Rekam Jejak Pembuktian Teknis Solusi:\n'
-                      '    1. Data Science & ML Pipeline: Memproses dan merekayasa fitur 5.000 data historis klaim BPJS Kesehatan, membangun Stratified Isolation Forest (14 strata faskes), serta melatih model klasifikasi XGBoost dengan performa PR-AUC 0.9958 dan F1-Score 97.14%.\n'
-                      '    2. Medical Knowledge RAG: Membangun pipeline ingestion dokumen PNPK Kemenkes berbasis PyMuPDF4LLM dan indexing basis data vektor Qdrant dengan struktur relasional tabel utuh.\n'
-                      '    3. Agentic LLM Orchestration: Merancang arsitektur agen penalaran klinis LangGraph yang divalidasi melalui framework DeepEval meraih skor sempurna 1.00 pada metrik Faithfulness dan Relevancy.\n'
-                      '    4. Fullstack Engineering & E2E Testing: Mengembangkan backend microservice FastAPI, bridging API V-Claim BPJS, dashboard antarmuka Next.js/React, serta otomasi pengujian Playwright E2E.')
+    doc.add_paragraph(
+        'Inovasi GARDA-JKN dirancang, dikembangkan, dan divalidasi secara mandiri oleh Inovator Tunggal '
+        '(Solo Innovator & Fullstack AI Architect). Kemandirian eksekusi ini membuktikan penguasaan komprehensif atas '
+        'seluruh spektrum rekayasa teknologi dan domain informatika kesehatan tanpa hambatan koordinasi (End-to-End Ownership):'
+    )
+    
+    doc.add_heading('A. Identitas Inovator & Kredensial Akademik', level=2)
+    doc.add_paragraph(
+        '• Nama Lengkap: Wahyu Maulana Ishaq\n'
+        '• Peran: Lead Fullstack AI Engineer & Health Informatics Specialist\n'
+        '• Institusi & Pendidikan: Mahasiswa S1 Informatika (Peminatan Data Science), Universitas Alma Ata, Yogyakarta (IPK: 3.84 / 4.00).\n'
+        '• Relevansi Studi & Kompetensi Medis: Telah menempuh kurikulum spesifik Electronic Health Records (EHR), Natural Language Processing (NLP), Machine Learning, Deep Learning, dan Visualisasi Data Medis.'
+    )
+
+    doc.add_heading('B. Rekam Jejak Teruji dalam AI Kesehatan (Clinical Decision Support)', level=2)
+    doc.add_paragraph(
+        '• Pengembang AegisMDT AI Agent (Hackathon Project 2026): Mengembangkan purwarupa Multi-Agent Oncology Decision Support berbasis Python/FastAPI yang mengorkestrasi agen patologi, onkologi, dan prognostik melalui alur konsensus berjenjang, RAG dokumen klinis, serta Human-in-the-Loop revision.\n'
+        '• Pengembang GARDA-JKN (BPJS Healthkathon 2026): Mengembangkan sistem adjudikasi klaim pre-payment 3-Lapis end-to-end, mulai dari pemrosesan 5.000 data historis klaim, Vector DB Qdrant berstandar PNPK, hingga pengujian otomatis Playwright E2E dan DeepEval (Faithfulness 1.00).'
+    )
+
+    doc.add_heading('C. Pelatihan Internasional & Pengalaman Tata Kelola AI Industri', level=2)
+    doc.add_paragraph(
+        '• Alumnus AI & Data Science Program — Matsuo Iwasawa Lab, The University of Tokyo (2026): Menyelesaikan program intensif machine learning; merancang pipeline klasifikasi tabular (LightGBM, XGBoost, CatBoost), Optuna hyperparameter tuning, dan Explainable AI (SHAP) dengan simulasi dampak finansial bernilai $11.4 Juta.\n'
+        '• Data Annotator (Remote Freelance) — Uber AI Solutions (Des 2025 – Sekarang): Terlibat langsung dalam evaluasi output LLM melalui Reinforcement Learning from Human Feedback (RLHF), preference ranking, dan response quality assessment guna menjamin keandalan dan alignment model AI.'
+    )
+
+    doc.add_heading('D. Prestasi & Rekognisi Eksekusi Cepat', level=2)
+    doc.add_paragraph(
+        '• 5x Hacker Badge di Lablab.ai (Global AI Hackathon Platform): Terbukti memiliki ketangkasan (agility) tinggi dalam membangun dan meluncurkan produk AI fungsional dalam batasan waktu kompetisi yang ketat.\n'
+        '• Juara Best Proposal — PKM Idea Competition 2025 (Universitas Alma Ata): Rekam jejak teruji dalam merumuskan proposal inovasi ilmiah yang terstruktur, berdampak tinggi, dan memenuhi standar metodologi riset formal.'
+    )
     
     # Save document
     doc.save('docs/Proposal_Healthkathon_2026_GARDA_JKN.docx')
