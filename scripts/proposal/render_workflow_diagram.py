@@ -3,64 +3,43 @@ from playwright.sync_api import sync_playwright
 
 MERMAID_DIAGRAM = """
 flowchart TD
-    %% Styling Definisi Khusus Background Putih (Light Theme / Word Document)
-    classDef startNode fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A,font-weight:bold;
-    classDef securityNode fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#991B1B,font-weight:bold;
-    classDef mlNode fill:#EEF2FF,stroke:#4F46E5,stroke-width:2px,color:#312E81,font-weight:bold;
-    classDef decisionNode fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E,font-weight:bold;
-    classDef ragNode fill:#F5F3FF,stroke:#7C3AED,stroke-width:2px,color:#5B21B6,font-weight:bold;
-    classDef llmNode fill:#F0FDFA,stroke:#0D9488,stroke-width:2px,color:#115E59,font-weight:bold;
-    classDef hitlNode fill:#FDF2F8,stroke:#DB2777,stroke-width:2px,color:#9D174D,font-weight:bold;
-    classDef endApproved fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#166534,font-weight:bold;
-    classDef endReject fill:#FEF2F2,stroke:#B91C1C,stroke-width:2px,color:#7F1D1D,font-weight:bold;
+    %% Styling Definisi - Font Hitam Pekat (#000000) & Background Lembut
+    classDef startNode fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#000000;
+    classDef securityNode fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#000000;
+    classDef mlNode fill:#EEF2FF,stroke:#4F46E5,stroke-width:2px,color:#000000;
+    classDef decisionNode fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#000000;
+    classDef arbiterNode fill:#F0FDFA,stroke:#0D9488,stroke-width:2px,color:#000000;
+    classDef hitlNode fill:#FDF2F8,stroke:#DB2777,stroke-width:2px,color:#000000;
+    classDef successNode fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#000000;
+    classDef rejectNode fill:#FEF2F2,stroke:#B91C1C,stroke-width:2px,color:#000000;
 
-    %% Subgraphs & Nodes
-    subgraph S1 ["Fase 1: Ingestion & Keamanan Data (Zero-Knowledge)"]
-        A(["Klaim Rumah Sakit Masuk (JSON Payload)"]):::startNode
-        B["Intake & Security Node<br/>• Zero-Knowledge Privacy Masking (Sensor NIK & Nama)<br/>• Pemindaian Prompt Injection & Jailbreak"]:::securityNode
-        C{"Pemeriksaan Keamanan Valid?"}:::decisionNode
-    end
+    A(["1. Klaim RS Masuk (JSON Payload)"]):::startNode
+    B["2. Intake & Security Node<br/>• Sensor NIK & Nama Pasien (UU PDP No. 27/2022)<br/>• Pemindaian Prompt Injection / Jailbreak"]:::securityNode
+    C["3. Risk Scoring Node (Lapis 1 ML Engine)<br/>• Evaluasi Anomali Finansial & Biaya (XGBoost + SHAP)"]:::mlNode
+    D{"Klaim Anomali?"}:::decisionNode
+    
+    E(["Auto-Approved<br/>Klaim Bersih Wajar & Pembayaran Diteruskan"]):::successNode
+    
+    F["4. RAG Retrieval & Arbiter Node (Lapis 2 & 3)<br/>• Qdrant Vector Search Pedoman PNPK Kemenkes RI<br/>• LLM DeepSeek-Chat Menyusun Berita Acara Medis"]:::arbiterNode
+    G{"Status Rekomendasi?"}:::decisionNode
+    
+    H(["Status: APPROVED / DOWNGRADED<br/>Berita Acara Putusan Otomatis Diterbitkan"]):::successNode
+    I["5. Human-in-the-Loop (HITL)<br/>Draf BAP Didorong ke Dasbor VClaim UI"]:::hitlNode
+    J(["Dokter Verifikator BPJS<br/>Mengetuk Palu Keputusan Hukum Terakhir"]):::hitlNode
+    
+    K(["Security Alert: DITOLAK<br/>Terdeteksi Serangan Siber"]):::rejectNode
 
-    subgraph S2 ["Fase 2: Skrining Cepat & Pembagian Beban (Lapis 1)"]
-        D["Risk Scoring Node (Lapis 1 ML Engine)<br/>• XGBoost + Stratified Isolation Forest<br/>• Deteksi Anomali Finansial & SHAP Values"]:::mlNode
-        E{"Conditional Handoff:<br/>Apakah Klaim Anomali?"}:::decisionNode
-    end
-
-    subgraph S3 ["Fase 3: Penalaran Medis & Regulasi (Lapis 2 & 3)"]
-        F["Medical Knowledge RAG (Lapis 2)<br/>• Qdrant Vector Search<br/>• Pencocokan Pasal PNPK Kemenkes & Juknis INA-CBG"]:::ragNode
-        G["Validator Agent (Pengecek Klinis)<br/>• Uji Kesesuaian Lab, Prosedur & Komorbiditas"]:::ragNode
-        H["Arbiter Node (Lapis 3: LLM DeepSeek-Chat)<br/>• Sintesis Bukti Klinis & Legalitas<br/>• Perumusan Draf Rekomendasi & Confidence Score"]:::llmNode
-    end
-
-    subgraph S4 ["Fase 4: Putusan & Human-in-the-Loop (HITL)"]
-        I{"Status Hasil Evaluasi"}:::decisionNode
-        J(["Auto-Approved:<br/>Klaim Bersih Wajar, Pembayaran Otomatis Diteruskan"]):::endApproved
-        K(["Final Status: APPROVED / DOWNGRADED<br/>Berita Acara Putusan Otomatis Diterbitkan"]):::endApproved
-        L["Human-in-the-Loop (HITL):<br/>Dorong Draf BAP ke Dasbor VClaim Mockup UI"]:::hitlNode
-        M(["Dokter Verifikator BPJS<br/>Mengetuk Palu Keputusan Hukum Terakhir"]):::hitlNode
-        N(["Security Alert: DITOLAK / ESCALATED<br/>Indikasi Ancaman Keamanan Siber"]):::endReject
-    end
-
-    %% Hubungan Alur (Edges)
+    %% Alur Proses Ringkas & Deterministic
     A --> B
-    B --> C
-    C -- "Terdeteksi Ancaman / Jailbreak" --> N
-    C -- "Aman & Lolos Sensor PII" --> D
-    D --> E
-    E -- "Inlier (Skor Wajar / Bersih)" --> J
-    E -- "Outlier (Mencurigakan / Anomali)" --> F
+    B -- "Aman & Data Bersih" --> C
+    B -- "Terdeteksi Jailbreak" --> K
+    C --> D
+    D -- "Inlier (Skor Wajar)" --> E
+    D -- "Outlier (Curiga)" --> F
     F --> G
-    G --> H
-    H --> I
-    I -- "Rekomendasi Jelas (Approve / Downgrade)" --> K
-    I -- "Status Ambigu / Kompleks (ESCALATED)" --> L
-    L --> M
-
-    %% Subgraph Styling
-    style S1 fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1.5px,color:#0F172A
-    style S2 fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1.5px,color:#0F172A
-    style S3 fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1.5px,color:#0F172A
-    style S4 fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1.5px,color:#0F172A
+    G -- "Rekomendasi Pasti" --> H
+    G -- "Ambigu (ESCALATED)" --> I
+    I --> J
 """
 
 HTML_TEMPLATE = f"""<!DOCTYPE html>
@@ -72,7 +51,7 @@ HTML_TEMPLATE = f"""<!DOCTYPE html>
         body {{
             background-color: #FFFFFF;
             margin: 0;
-            padding: 30px;
+            padding: 24px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             display: flex;
             justify-content: center;
@@ -80,10 +59,12 @@ HTML_TEMPLATE = f"""<!DOCTYPE html>
         }}
         #container {{
             background-color: #FFFFFF;
-            padding: 20px;
+            padding: 12px;
         }}
-        .mermaid {{
-            background-color: #FFFFFF;
+        .nodeLabel, .edgeLabel, text, tspan, span, div {{
+            color: #000000 !important;
+            fill: #000000 !important;
+            font-weight: 600;
         }}
     </style>
 </head>
@@ -100,13 +81,15 @@ HTML_TEMPLATE = f"""<!DOCTYPE html>
             themeVariables: {{
                 background: '#FFFFFF',
                 primaryColor: '#EFF6FF',
-                primaryTextColor: '#1E3A8A',
+                primaryTextColor: '#000000',
                 primaryBorderColor: '#2563EB',
                 lineColor: '#475569',
-                secondaryColor: '#F8FAFC',
+                secondaryColor: '#FFFFFF',
                 tertiaryColor: '#FFFFFF',
+                edgeLabelBackground: '#FFFFFF',
+                textColor: '#000000',
                 fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                fontSize: '14px'
+                fontSize: '13px'
             }}
         }});
     </script>
@@ -123,14 +106,13 @@ def generate_png():
     with open(html_path, "w", encoding="utf-8") as f:
         f.write(HTML_TEMPLATE)
         
-    print("🎨 Merender diagram Mermaid dengan latar belakang putih murni...")
+    print("🎨 Merender diagram Mermaid yang to the point dengan font hitam...")
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page(device_scale_factor=2)  # High resolution / Retina quality
+        page = browser.new_page(viewport={"width": 1200, "height": 1400}, device_scale_factor=2)
         page.goto(f"file://{os.path.abspath(html_path)}")
         page.wait_for_selector(".mermaid svg", timeout=15000)
         
-        # Cari elemen svg dan screenshot
         element = page.locator("#container")
         element.screenshot(path=output_png)
         browser.close()
