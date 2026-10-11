@@ -33,6 +33,10 @@ def create_docx():
                       '2. Lapis 2 (Qdrant RAG - Advanced PDF Parsing): Mesin pencarian vektor medis otomatis. Mengatasi kelemahan RAG standar, sistem kami menggunakan PyMuPDF4LLM untuk mem-parsing Pedoman Nasional Pelayanan Kedokteran (PNPK). Teknologi ini berhasil mengekstrak "Tabel Bersarang" dan "Flowchart Medis" ke dalam format Markdown murni, menjaga konteks relasional medis yang vital agar tidak hilang.\n'
                       '3. Lapis 3 (LLM Agent - LangGraph): Clinical Arbiter (DeepSeek-Chat) yang menyintesis temuan dari Lapis 1 & 2. Sesuai dengan "Fraud Control Matrix" kami, sistem ini dapat membedakan indikasi heuristik (finansial gap) dengan bukti otentik (aturan PNPK) untuk menerbitkan rekomendasi Berita Acara yang definitif.')
     doc.add_paragraph('Alur Workflow Sistem:\nKlaim RS Masuk -> Lapis 1 (Financial Screening) -> Jika skor risiko tinggi, klaim dilempar ke Lapis 2 (Qdrant mencari dokumen medis relevan) -> Konteks digabung ke Lapis 3 (LLM Arbiter) -> LLM mengeluarkan Keputusan (Auto-Approve / Downgrade / Escalate). Jika statusnya "Escalate", maka akan diserahkan ke Dasbor Manusia (Human-in-the-Loop).')
+    if os.path.exists('docs/evidence/plot_workflow_system.png'):
+        doc.add_picture('docs/evidence/plot_workflow_system.png', width=Inches(4.8))
+        last_paragraph = doc.paragraphs[-1]
+        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
     # Bagian 4
     doc.add_heading('Bagian 4: Pendekatan Teknis & Data (Visualisasi)', level=1)
