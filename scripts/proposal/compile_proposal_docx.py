@@ -333,62 +333,64 @@ def create_docx():
     # Bagian 8
     doc.add_heading('Bagian 8: Risiko, Privasi & Etika', level=1)
     doc.add_paragraph(
-        'Penerapan kecerdasan buatan pada data jaminan kesehatan publik menuntut tanggung jawab etis dan kepatuhan hukum yang mutlak. GARDA-JKN dirancang dengan mengedepankan prinsip kehati-hatian (prudence), akuntabilitas medikolegal, dan perlindungan privasi data peserta JKN sesuai standar regulasi nasional:'
+        'Penerapan AI pada data jaminan kesehatan publik menuntut tanggung jawab etis dan kepatuhan hukum tanpa kompromi. '
+        'GARDA-JKN dibangun berlandaskan prinsip Privacy-by-Design, kepatuhan penuh terhadap UU PDP No. 27/2022, '
+        'dan tata kelola Human-Centric AI.'
     )
 
     doc.add_heading('A. Perlindungan Data Pribadi (Kepatuhan UU PDP No. 27/2022)', level=2)
     doc.add_paragraph(
-        'Sesuai amanat Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP), data rekam medis dan identitas peserta JKN merupakan Data Pribadi Spesifik yang wajib dilindungi kerahasiaannya dengan standar tertinggi:'
+        '• Zero-Knowledge Privacy Masking: Seluruh PII (Nama Pasien, NIK, No. Kartu BPJS) disensor otomatis di pintu awal ([DISENSOR_UNTUK_PRIVASI]) sebelum berkas dialirkan ke model AI. Model hanya memproses kode diagnosis (ICD-10/ICD-9-CM) dan data numerik.\n'
+        '• Pemrosesan Nir-Jejak (Ephemeral Processing): Analisis LLM bersifat stateless tanpa menyimpan rekam medis di cloud publik (Zero Data Retention), mencegah kebocoran data privat pasien ke pihak ketiga.\n'
+        '• Enkripsi Berlapis (At-Rest & In-Transit): Seluruh komunikasi API diamankan dengan protokol TLS 1.3 mTLS dan penyimpanan basis data menggunakan enkripsi standar militer AES-256.'
     )
-    doc.add_paragraph('• Zero-Knowledge Privacy Masking: Seluruh data identitas pasien (NIK, Nama Lengkap, Nomor Kontak, dan Alamat) disensor secara otomatis di Intake Node ([DISENSOR_UNTUK_PRIVASI]) sebelum berkas klaim dialirkan ke mesin ML maupun cloud LLM. Model hanya memproses kode klinis (ICD-10, ICD-9-CM) dan variabel numerik agregat.')
-    doc.add_paragraph('• Kepatuhan Data Riset Teranonimkan: Model dilatih dan divalidasi strictly menggunakan data sampel resmi BPJS Kesehatan yang telah dide-identifikasi (de-identified dataset), tanpa pernah mengekspos data riil privat peserta JKN.')
-    doc.add_paragraph('• Enkripsi Data End-to-End: Seluruh transmisi API diamankan dengan protokol TLS 1.3 dan enkripsi muatan data (payload encryption) berstandar AES-256.')
 
-    doc.add_heading('B. Mitigasi Bias Algoritma & Keterbatasan Model AI', level=2)
+    doc.add_heading('B. Mitigasi Bias Algoritma & Batasan Operasional AI', level=2)
     doc.add_paragraph(
-        'Salah satu risiko terbesar AI dalam adjudikasi klaim adalah bias sistemik yang dapat mendiskriminasi fasilitas kesehatan skala kecil di daerah perifer atau wilayah 3T:'
+        '• Nir-Bias Skala Faskes (Stratified 14 Strata): Algoritma Lapis 1 membagi tolok ukur ke dalam 14 strata faskes (RS Tipe A, B, C, D dan regional). Pola klaim RS tipe C/D atau daerah 3T hanya dibandingkan terhadap faskes setara (peer-group), bukan diadili memakai standar RS rujukan nasional metropolitan.\n'
+        '• Batas Probabilitas & Eskalasi Cerdas: Sistem memiliki ambang batas ketat (Hard Anomaly Threshold). Jika skor berada di zona ambigu (0.65 - 0.85) atau menghadapi penyakit langka, sistem secara sadar menolak memutus sepihak dan langsung mengalihkan berkas ke verifikator manusia.'
     )
-    doc.add_paragraph('• Mitigasi Bias Skala Faskes (Stratified Isolation Forest): Algoritma Lapis 1 kami membagi baseline klaim ke dalam 14 strata faskes (RS Tipe A, B, C, D dan regionalisasi tarif). Klaim rumah sakit tipe kecil hanya dibandingkan terhadap rekanan setara (peer-group), bukan diadili menggunakan standar RS rujukan nasional metropolitan.')
-    doc.add_paragraph('• Pengakuan Batas Keterbatasan AI (Probabilistic Boundaries): Model AI GARDA-JKN beroperasi di ranah probabilitas statistik untuk mendeteksi anomali pola, bukan bertindak sebagai entitas pemberi vonis hukum.')
-    doc.add_paragraph('• Batasan Rujukan Klinis Mutlak: LLM Clinical Arbiter dikunci (constrained) hanya boleh merujuk pada teks regulasi Pedoman Nasional Pelayanan Kedokteran (PNPK) resmi Kemenkes RI yang terverifikasi di Qdrant Vector DB.')
 
-    doc.add_heading('C. Peran Manusia dalam Keputusan (Human-in-the-Loop Architecture)', level=2)
+    doc.add_heading('C. Peran Manusia dalam Keputusan (Human-in-the-Loop Governance)', level=2)
     doc.add_paragraph(
-        'GARDA-JKN menganut filosofi bahwa AI hadir untuk mendukung dan memperkuat wewenang manusia (Decision Support System), bukan menggantikan peran dokter verifikator:'
+        '• Sistem Pendukung, Bukan Hakim Otonom: GARDA-JKN berfungsi murni sebagai Clinical Decision Support System (CDSS). Sistem dilarang keras menolak klaim secara sepihak (Zero Autonomous Auto-Rejection).\n'
+        '• Hak Veto Mutlak Dokter Verifikator: Seluruh penolakan klaim wajib ditandatangani dan diputus secara sah oleh Dokter Verifikator BPJS melalui antarmuka V-Claim (Two-Person Verification Rule).\n'
+        '• Transparansi Bukti Hukum (Explainable AI): Setiap klaim yang ditandai selalu disertai kode alasan TreeSHAP dan kutipan eksak bab, tabel, dan halaman resmi dari PNPK Kemenkes RI, menjamin akuntabilitas medikolegal di hadapan TKMKB.'
     )
-    doc.add_paragraph('• Non-Autonomous Adjudication: Sistem mesin tidak memiliki kewenangan hukum untuk membatalkan atau menolak klaim rumah sakit secara sepihak. Seluruh klaim mencurigakan dialihkan ke status ESCALATED.')
-    doc.add_paragraph('• Hak Veto Dokter Verifikator: Dokter Verifikator BPJS memegang kendali penuh (veto power) untuk mengambil keputusan akhir (Setujui, Downgrade Severity, atau Tolak Klaim) berdasarkan telaah draf Berita Acara yang disajikan AI.')
-    doc.add_paragraph('• Transparansi Medikolegal (Explainable AI): Setiap temuan anomali disertai alasan transparan (TreeSHAP Reason Codes) dan sitasi pasal PNPK, memastikan keputusan audit dapat dipertanggungjawabkan secara hukum dan etika kedokteran.')
 
-    doc.add_heading('D. Matriks Penilaian & Mitigasi Risiko Kritis', level=2)
-    
-    # Risk Matrix Table
+    doc.add_heading('D. Matriks Penilaian & Mitigasi Risiko Kritis (Tabel 30 Detik Baca)', level=2)
     risk_table = doc.add_table(rows=1, cols=4)
     risk_table.style = 'Light Shading Accent 1'
     r_hdr = risk_table.rows[0].cells
     r_hdr[0].text = 'Kategori Risiko'
-    r_hdr[1].text = 'Deskripsi Dampak'
-    r_hdr[2].text = 'Tingkat Risiko'
-    r_hdr[3].text = 'Strategi Mitigasi Teruji'
+    r_hdr[1].text = 'Identifikasi Potensi Ancaman'
+    r_hdr[2].text = 'Tingkat'
+    r_hdr[3].text = 'Strategi Mitigasi Teruji GARDA-JKN'
 
     risks = [
         (
-            'Serangan Siber Linguistik (Prompt Injection / Jailbreak)',
-            'Faskes menyisipkan teks instruksi manipulatif pada catatan medis untuk memperdaya LLM agar klaim disetujui.',
-            'Tinggi (High)',
-            'Implementasi Security Guardrail Node berbasis Regex di tahap awal untuk memblokir teks eksploitatif sebelum menyentuh LLM.'
+            'Manipulasi Teks Medis (Prompt Injection)',
+            'Faskes menyisipkan teks manipulatif pada resume medis guna memperdaya LLM agar klaim lolos.',
+            'Tinggi',
+            'Security Guardrail Node: Sanitasi regex & validasi skema semantik ketat di gerbang awal sebelum teks disentuh LLM.'
         ),
         (
-            'Halusinasi Medis LLM (Fictitious Guidelines)',
-            'AI mengarang aturan klinis atau kriteria diagnosis fiktif yang merugikan faskes atau pasien.',
-            'Tinggi (High)',
-            'Constrained Qdrant RAG dari dokumen PDF PNPK resmi Kemenkes RI, tervalidasi DeepEval Faithfulness 100% dan fallback deterministik.'
+            'Halusinasi Regulasi Medis LLM',
+            'AI mengarang aturan klinis fiktif yang merugikan faskes atau membahayakan pasien.',
+            'Tinggi',
+            'Constrained Qdrant RAG: Parameter suhu temp=0.0, dikunci hanya merujuk PDF PNPK resmi Kemenkes (DeepEval 100% Faithfulness).'
         ),
         (
-            'Alarm Palsu / Salah Tuduh (False Positive Disputes)',
-            'Klaim faskes patuh dituduh fraud sehingga mengganggu arus kas dan kemitraan rumah sakit.',
-            'Sedang (Medium)',
-            'Penerapan Stratified Isolation Forest (False Positive Rate mendekati 0%, ROC-AUC 0.9996), didukung hak sanggah berkas berjenjang di TKMKB.'
+            'Alarm Palsu (False Positive Dispute)',
+            'Klaim RS patuh tertuduh fraud sehingga mengganggu arus kas faskes dan memicu konflik hukum.',
+            'Sedang',
+            'Zero Auto-Reject & Sanggah 14 Hari: Sistem tidak pernah menolak sepihak; RS berhak unggah berkas penunjang tandingan via V-Claim.'
+        ),
+        (
+            'Latensi Jaringan & Biaya Token API',
+            'Lonjakan volume klaim atau kendala jaringan cloud mengganggu kelancaran antrean verifikasi.',
+            'Sedang',
+            'Offline Fallback Architecture: Lapis 1 (Heuristik & XGBoost) dapat berjalan mandiri secara offline di server lokal (<10 milidetik).'
         )
     ]
 
