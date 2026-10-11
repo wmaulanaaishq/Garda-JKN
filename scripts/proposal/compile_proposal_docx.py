@@ -43,40 +43,38 @@ def create_docx():
     
     doc.add_heading('A. Sumber dan Karakteristik Data (The Golden Dataset)', level=2)
     doc.add_paragraph(
-        'Dalam membangun fondasi analitik yang kokoh, GARDA-JKN mengintegrasikan dua himpunan data empiris resmi BPJS Kesehatan, yaitu data riwayat kunjungan Fasilitas Kesehatan Rujukan Tingkat Lanjut (FKRTL / 202403_fkrtl.dta) dan data diagnosis sekunder (202405_diagnosissekunder.dta). Penggabungan kedua tabel relasional ini berbasis nomor kunjungan (FKL02) sangat krusial guna mengaitkan variabel biaya tagihan dan durasi rawat inap dengan komorbiditas penyerta yang menjadi penentu sahnya tingkat keparahan (Severity Level) dalam sistem tarif INA-CBG.'
+        'Dalam membangun fondasi analitik yang kokoh, GARDA-JKN mengintegrasikan data operasional resmi BPJS Kesehatan yang mencakup aspek administratif, finansial, dan klinis. Penggabungan tabel relasional ini dirancang khusus untuk membedah korelasi antara tarif klaim dengan riwayat medis pasien:'
     )
-    doc.add_paragraph(
-        'Meskipun total populasi data mentah yang tersedia mencakup sekitar 4 juta baris transaksi klaim, pelatihan dan validasi model pada fase purwarupa ini secara sengaja menggunakan pendekatan Stratified Representative Sampling sebanyak 5.000 sampel klaim berkualitas tinggi (The Golden Dataset). Langkah metodologis ini diambil untuk mengatasi tantangan extreme class imbalance yang lazim terjadi pada data klaim medis, di mana kasus kecurangan merupakan anomali minoritas (1–3%). Penarikan sampel secara bertingkat memastikan representasi yang adil dan proporsional lintas kelas rumah sakit (Tipe A, B, C, dan D) serta ragam kelompok diagnosis klinis utama, sehingga model terbebas dari bias ukuran faskes dan memiliki fondasi inferensi yang presisi.'
-    )
+    doc.add_paragraph('• Sumber Data Empiris: Menggabungkan data kunjungan FKRTL (202403_fkrtl.dta) untuk variabel biaya dan Length of Stay, dengan data diagnosis sekunder (202405_diagnosissekunder.dta) berbasis nomor kunjungan (FKL02) guna memvalidasi komorbiditas penyerta.')
+    doc.add_paragraph('• Strategi Stratified Sampling (5.000 Klaim): Dari total populasi ~4 juta baris klaim, kami mengekstrak 5.000 sampel representatif (The Golden Dataset). Langkah metodologis ini diambil untuk merepresentasikan proporsi seimbang Rumah Sakit Kelas A, B, C, dan D serta menghindari jebakan extreme class imbalance (bias terhadap klaim normal).')
 
     doc.add_heading('B. Metode Pelabelan AI (Semi-Supervised Learning) & Validasi Outlier', level=2)
     doc.add_paragraph(
-        'Tantangan utama dalam mendeteksi fraud klaim kesehatan di Indonesia adalah ketiadaan label biner (ground-truth fraud) pada data mentah operasional BPJS. Untuk memecahkan kendala ini secara ilmiah tanpa bergantung pada pelabelan manual yang lambat dan subjektif, GARDA-JKN mengadopsi paradigma Semi-Supervised Learning dengan mengimplementasikan algoritma Stratified Isolation Forest. Algoritma ini membedah pola klaim secara mandiri (unsupervised) dengan membandingkan deviasi suatu klaim hanya terhadap kelompok rekanan yang setara (peer-group comparison berdasarkan kelas RS dan kelompok diagnosis).'
-    )
-    doc.add_paragraph(
-        'Sebagaimana disajikan pada grafik distribusi di bawah ini, proses pemisahan klaster otomatis pada 5.000 data sampel berhasil mengisolasi klaim ke dalam dua kelompok yang terukur secara objektif:'
+        'Tantangan mendasar dalam mendeteksi fraud klaim kesehatan di Indonesia adalah ketiadaan label biner (ground-truth fraud) pada data mentah operasional BPJS. Untuk memecahkan kendala ini secara objektif tanpa pelabelan manual yang subjektif, GARDA-JKN mengadopsi paradigma Semi-Supervised Learning dengan mengimplementasikan algoritma Stratified Isolation Forest. Algoritma ini membandingkan deviasi klaim hanya terhadap kelompok rekanan faskes yang setara (peer-group comparison):'
     )
     if os.path.exists('docs/evidence/plot_eda_distribution.png'):
         doc.add_picture('docs/evidence/plot_eda_distribution.png', width=Inches(4.5))
         last_paragraph = doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    doc.add_paragraph(
-        'Hasil pelabelan mandiri tersebut menunjukkan bahwa dari 5.000 klaim yang dievaluasi, sebanyak 4.651 klaim (93,0%) teridentifikasi sebagai Inlier (klaim wajar/bersih), sementara 349 klaim (7,0%) berhasil diisolasi sebagai Outlier yang memuat anomali statistik berisiko tinggi. Rasio kecurigaan anomali sebesar 7,0% ini sangat selaras dan mencerminkan realitas empiris di lapangan, di mana tinjauan KPK dan Kementerian Kesehatan (2024) mengonfirmasi bahwa potensi kebocoran dana Program JKN akibat fraud dan inefisiensi fasilitas kesehatan berkisar antara 5% hingga 10% dari total klaim tahunan. Hal ini membuktikan bahwa batas sensitivitas model kami bekerja secara realistis tanpa menghukum faskes yang patuh.'
-    )
+    doc.add_paragraph('Berdasarkan visualisasi grafik di atas, sistem berhasil mengklasifikasikan 5.000 klaim mentah ke dalam dua klaster terukur:')
+    doc.add_paragraph('• Klaster Inlier (Klaim Normal - 93,0%): Sebanyak 4.651 klaim terkonfirmasi memiliki pola biaya dan durasi rawat yang wajar serta selaras dengan pedoman klinis.')
+    doc.add_paragraph('• Klaster Outlier (Indikasi Fraud - 7,0%): Sebanyak 349 klaim berhasil diisolasi sebagai anomali statistik berisiko tinggi yang menjadi target prioritas verifikasi.')
+    doc.add_paragraph('• Validasi Realitas Empiris: Rasio temuan anomali sebesar 7,0% ini sangat presisi dan konsisten dengan hasil audit KPK dan Kemenkes (2024) yang menaksir kebocoran dana JKN akibat fraud berada pada rentang 5% hingga 10% per tahun.')
 
     doc.add_heading('C. Bobot Fitur Kritis & Interpretabilitas Model (Explainable AI - SHAP)', level=2)
     doc.add_paragraph(
-        'Guna menjamin akuntabilitas hukum dan mencegah fenomena "Black-Box AI", model Balanced Bagging XGBoost yang dilatih di atas label anomali tersebut dilengkapi dengan modul interpretabilitas SHAP (SHapley Additive exPlanations). Berdasarkan kontribusi nilai fitur terhadap skor risiko, sistem secara konsisten mendeteksi bahwa anomali klaim paling dominan dipicu oleh variabel Biaya Tagih Per Hari, Durasi Rawat Inap (Length of Stay), dan ketidaksesuaian Severity Level terhadap komorbiditas sekunder.'
+        'Guna menjamin akuntabilitas hukum dan mencegah fenomena "Black-Box AI", model Balanced Bagging XGBoost yang dilatih di atas label anomali tersebut dilengkapi dengan modul interpretabilitas SHAP (SHapley Additive exPlanations). Pendekatan ini memungkinkan dokter verifikator memahami persis variabel apa yang memicu kecurigaan sistem:'
     )
     if os.path.exists('docs/evidence/plot_feature_importance.png'):
         doc.add_picture('docs/evidence/plot_feature_importance.png', width=Inches(4.5))
         last_paragraph = doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    doc.add_paragraph(
-        'Korelasi ini memiliki relevansi klinis dan hukum yang sangat kuat terhadap modus operandi kecurangan di rumah sakit. Lonjakan tajam pada rasio Biaya Tagih Per Hari mengindikasikan kuatnya potensi klaim fiktif (Phantom Billing) di mana faskes membebankan tindakan/obat mahal tanpa adanya penambahan hari rawat atau bukti prosedur invasif. Di sisi lain, durasi rawat inap yang melampaui standar deviasi klinis tanpa justifikasi medis serta pengajuan Severity III tanpa keberadaan diagnosis sekunder mengonfirmasi indikasi manipulasi koding (Upcoding) demi mencairkan tarif INA-CBG yang jauh lebih tinggi.'
-    )
+    doc.add_paragraph('Berdasarkan grafik feature importance SHAP, tiga pemicu utama anomali berkorelasi kuat dengan tipologi fraud di rumah sakit:')
+    doc.add_paragraph('• Biaya Tagih Per Hari (Indikasi Phantom Billing): Deteksi lonjakan tagihan tanpa adanya penambahan hari rawat atau prosedur invasif yang rasional.')
+    doc.add_paragraph('• Durasi Rawat Inap / LOS (Indikasi Manipulasi Hari Rawat): Hari rawat yang melampaui batas deviasi standar klinis PNPK demi menggelembungkan klaim.')
+    doc.add_paragraph('• Diskrepansi Severity Level (Indikasi Upcoding): Pengajuan klaim tingkat keparahan tinggi (Severity III) yang diajukan tanpa adanya bukti diagnosis sekunder yang sah.')
 
     # Bagian 5
     doc.add_heading('Bagian 5: Tingkat Kematangan, Prototype & Bukti Evaluasi (MVP)', level=1)
