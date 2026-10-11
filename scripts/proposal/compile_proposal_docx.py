@@ -337,36 +337,41 @@ def create_docx():
     doc.add_page_break()
 
     # -------------------------------------------------------------
-    # HALAMAN 7 & 8: BAGIAN 4 (PENDEKATAN TEKNIS & DATA)
+    # HALAMAN 7: BAGIAN 4 (HALAMAN A: KARAKTERISTIK DATA & PELABELAN)
     # -------------------------------------------------------------
     doc.add_heading('Bagian 4: Pendekatan Teknis & Data', level=1)
     
-    doc.add_heading('A. Sumber & Karakteristik Data (The Golden Dataset)', level=2)
+    doc.add_heading('4.1 Sumber & Karakteristik Data (The Golden Dataset)', level=2)
     doc.add_paragraph(
         'Dalam membangun fondasi analitik yang kokoh, GARDA-JKN mengintegrasikan data operasional resmi BPJS Kesehatan yang mencakup aspek administratif, finansial, dan klinis:\n'
-        '• Sumber Data Empiris: Menggabungkan data kunjungan FKRTL (202403_fkrtl.dta) untuk variabel biaya dan Length of Stay, dengan data diagnosis sekunder (202405_diagnosissekunder.dta) berbasis nomor kunjungan (FKL02) guna memvalidasi komorbiditas penyerta.\n'
-        '• Strategi Stratified Sampling (5.000 Klaim): Dari total populasi ~4 juta baris klaim, kami mengekstrak 5.000 sampel representatif (The Golden Dataset) yang merepresentasikan proporsi seimbang Rumah Sakit Kelas A, B, C, dan D serta menghindari jebakan extreme class imbalance.'
+        '• Sumber Data Empiris: Menggabungkan data kunjungan FKRTL (202403_fkrtl.dta) untuk variabel biaya dan Length of Stay, dengan data diagnosis sekunder (202405_diagnosissekunder.dta) berbasis nomor kunjungan (FKL02) guna memvalidasi komorbiditas penyerta tingkat keparahan (Severity Level).\n'
+        '• Strategi Stratified Sampling (5.000 Klaim): Dari total populasi ~4 juta baris klaim, kami mengekstrak 5.000 sampel representatif (The Golden Dataset) yang merepresentasikan proporsi seimbang Rumah Sakit Kelas A, B, C, dan D serta menghindari jebakan extreme class imbalance (bias terhadap klaim normal).'
     )
 
-    doc.add_heading('B. Metode Pelabelan AI (Semi-Supervised Learning) & Validasi Outlier', level=2)
+    doc.add_heading('4.2 Metode Pelabelan AI (Semi-Supervised Learning) & Validasi Outlier', level=2)
     doc.add_paragraph(
-        'Tantangan utama klaim BPJS adalah ketiadaan label biner (ground-truth fraud) pada data mentah. GARDA-JKN mengadopsi paradigma Semi-Supervised Learning dengan mengimplementasikan Stratified Isolation Forest (14 klaster faskes) untuk mendeteksi anomali tanpa bias skala rumah sakit.'
+        'Tantangan fundamental klaim BPJS Kesehatan adalah ketiadaan label biner (ground-truth fraud) pada data mentah. Untuk memecahkan kendala ini secara objektif tanpa pelabelan manual subjektif, GARDA-JKN mengadopsi paradigma Semi-Supervised Learning dengan mengimplementasikan Stratified Isolation Forest (14 klaster faskes) yang membandingkan klaim hanya terhadap rekanan setara (peer-group comparison).'
     )
 
     doc.add_paragraph(
-        'Berdasarkan visualisasi analitik, sistem berhasil mengklasifikasikan 5.000 klaim mentah ke dalam dua klaster terukur:\n'
-        '• Klaster Inlier (Klaim Normal - 93,0%): Sebanyak 4.651 klaim terkonfirmasi memiliki pola biaya dan durasi rawat yang wajar serta selaras dengan pedoman klinis.\n'
-        '• Klaster Outlier (Indikasi Fraud - 7,0%): Sebanyak 349 klaim berhasil diisolasi sebagai anomali statistik berisiko tinggi yang menjadi target prioritas verifikasi.\n'
-        '• Validasi Realitas Empiris: Rasio temuan anomali 7,0% ini sangat presisi dan konsisten dengan hasil audit KPK dan Kemenkes (2024) yang menaksir kebocoran dana JKN berada pada rentang 5% hingga 10% per tahun.'
+        'Berdasarkan evaluasi analitik, sistem berhasil mengklasifikasikan 5.000 klaim mentah ke dalam dua klaster terukur:\n'
+        '• Klaster Inlier (Klaim Normal — 93,0%): Sebanyak 4.651 klaim terkonfirmasi memiliki pola biaya dan durasi rawat yang wajar serta selaras dengan pedoman klinis.\n'
+        '• Klaster Outlier (Indikasi Fraud — 7,0%): Sebanyak 349 klaim berhasil diisolasi sebagai anomali statistik berisiko tinggi yang menjadi target prioritas verifikasi.\n'
+        '• Validasi Realitas Empiris: Rasio temuan anomali 7,0% ini sangat presisi dan konsisten dengan hasil audit resmi KPK dan Kemenkes RI (2024) yang menaksir kebocoran dana JKN akibat fraud berada pada rentang 5% hingga 10% per tahun.'
     )
 
-    doc.add_heading('C. Bobot Fitur Kritis & Interpretabilitas Model (Explainable AI - SHAP)', level=2)
+    doc.add_page_break()
+
+    # -------------------------------------------------------------
+    # HALAMAN 8: BAGIAN 4 (HALAMAN B: EXPLAINABLE AI - SHAP)
+    # -------------------------------------------------------------
+    doc.add_heading('4.3 Bobot Fitur Kritis & Interpretabilitas Model (Explainable AI - SHAP)', level=2)
     doc.add_paragraph(
-        'Guna mencegah fenomena "Black-Box AI", model Balanced Bagging XGBoost dilengkapi modul interpretabilitas TreeSHAP (SHapley Additive exPlanations). Pendekatan ini memungkinkan verifikator memahami variabel pemicu anomali secara transparan:'
+        'Guna menjamin akuntabilitas hukum dan mencegah fenomena "Black-Box AI", model Balanced Bagging XGBoost yang dilatih di atas label anomali dilengkapi modul interpretabilitas TreeSHAP (SHapley Additive exPlanations). Pendekatan ini memungkinkan dokter verifikator memahami variabel pemicu anomali secara transparan dalam bentuk Auditor Reason Codes:'
     )
 
     if os.path.exists('docs/evidence/plot_feature_importance.png'):
-        doc.add_picture('docs/evidence/plot_feature_importance.png', width=Inches(4.2))
+        doc.add_picture('docs/evidence/plot_feature_importance.png', width=Inches(4.4))
         last_paragraph = doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p_cap = doc.add_paragraph('Gambar 3. Top 5 Fitur Penentu Prediksi Fraud Berdasarkan Analisis Nilai SHAP')
@@ -375,10 +380,10 @@ def create_docx():
         p_cap.runs[0].font.italic = True
 
     doc.add_paragraph(
-        'Tiga pemicu utama anomali berkorelasi kuat dengan tipologi fraud di rumah sakit:\n'
+        'Berdasarkan analisis nilai SHAP, tiga pemicu utama anomali berkorelasi kuat dengan tipologi fraud di rumah sakit:\n'
         '1. Biaya Tagih Per Hari (Indikasi Phantom Billing): Deteksi lonjakan tagihan tanpa adanya penambahan hari rawat atau prosedur invasif yang rasional.\n'
-        '2. Durasi Rawat Inap / LOS (Indikasi Manipulasi Hari Rawat): Hari rawat yang melampaui batas deviasi standar klinis PNPK demi menggelembungkan klaim.\n'
-        '3. Diskrepansi Severity Level (Indikasi Upcoding): Pengajuan klaim tingkat keparahan tinggi (Severity III) yang diajukan tanpa adanya bukti diagnosis sekunder yang sah.'
+        '2. Durasi Rawat Inap / LOS (Indikasi Manipulasi Hari Rawat): Hari rawat yang melampaui batas deviasi standar klinis PNPK demi menggelembungkan klaim rawat inap.\n'
+        '3. Diskrepansi Severity Level (Indikasi Upcoding): Pengajuan klaim tingkat keparahan tinggi (Severity III) yang diajukan tanpa adanya bukti diagnosis komorbiditas sekunder yang sah.'
     )
 
     doc.add_page_break()
