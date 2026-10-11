@@ -30,11 +30,11 @@ def create_docx():
                       '2. Bukan "Black-Box AI" yang Memicu Friksi: Mayoritas sistem AI ditolak oleh faskes karena hanya mengeluarkan skor probabilitas tanpa alasan medis yang jelas. GARDA-JKN menghadirkan Explainable AI berbasis Agentic RAG yang memvalidasi setiap temuan dengan rujukan eksak bab, tabel, dan halaman dari PNPK Kemenkes secara otomatis.\n'
                       '3. Arsitektur Pra-Pembayaran Nir-Friksi (Zero-Disruption Middleware): Beroperasi sebagai middleware cerdas yang terhubung langsung ke Web Service V-Claim BPJS Kesehatan, menyelesaikan adjudikasi dalam hitungan detik tanpa merombak sistem eksisting, sekaligus menjamin kendali hukum tetap berada di tangan Dokter Verifikator (Human-in-the-Loop).')
     
-    doc.add_paragraph('D. Identitas Tim Pengusul & Sinergi Multidisiplin\n'
-                      'GARDA-JKN diusung oleh tim lintas disiplin yang memadukan keahlian rekayasa kecerdasan artifisial, arsitektur perangkat lunak skala enterprise, dan kepakaran domain klinis:\n'
-                      '• Lead AI & Machine Learning Engineer: Mengembangkan model deteksi anomali (Stratified Isolation Forest, XGBoost), arsitektur basis data vektor Qdrant, dan orkestrasi penalaran agen LLM (LangGraph).\n'
-                      '• Fullstack & Health Systems Integration Engineer: Mengarsitekturi microservice pre-payment middleware (FastAPI), integrasi bridging API V-Claim BPJS Kesehatan, dan antarmuka dasbor verifikator responsif.\n'
-                      '• Clinical Data & Health Domain Specialist: Memformulasikan Fraud Control Matrix, kurasi ontologi medis PNPK Kemenkes, validasi korelasi diagnosis komorbiditas INA-CBG, serta penjaminan mutu anti-halusinasi medis (DeepEval).')
+    doc.add_paragraph('D. Profil Pengembang & Kapabilitas Eksekusi End-to-End (Solo Innovator)\n'
+                      'Sistem GARDA-JKN dirancang, dibangun, dan diuji secara mandiri oleh Inovator Tunggal (Solo Developer & Fullstack AI Architect) yang menguasai seluruh spektrum teknis dan domain kesehatan secara komprehensif (End-to-End Execution Capability):\n'
+                      '• Rekayasa Kecerdasan Artifisial & Data Science: Mengembangkan pemodelan deteksi anomali (Stratified Isolation Forest), klasifikasi supervised (XGBoost pada 5.000 data klaim), rekayasa basis data vektor Qdrant, serta orkestrasi multi-agen LangGraph.\n'
+                      '• Arsitektur Perangkat Lunak & Integrasi Sistem: Membangun microservice pre-payment middleware (FastAPI), perancangan bridging API V-Claim BPJS Kesehatan, pengembangan dashboard interaktif verifikator (Next.js/React), dan otomasi pengujian sistem (Playwright E2E).\n'
+                      '• Domain Klinis & Kepatuhan Regulasi Kesehatan: Merumuskan Fraud Control Matrix berstandar INA-CBG, kurasi ontologi medis PNPK Kemenkes RI, serta pengujian mutu inferensi bebas halusinasi menggunakan framework DeepEval.')
     
     # Bagian 2
     doc.add_heading('Bagian 2: Masalah & Urgensi', level=1)
@@ -349,11 +349,16 @@ def create_docx():
         r_cells[3].text = mit
 
     # Bagian 9
-    doc.add_heading('Bagian 9: Profil Tim & Eksekusi', level=1)
-    doc.add_paragraph('Inovasi ini diusung oleh tim spesialis yang menguasai spektrum teknis secara End-to-End:\n'
-                      '- AI/ML Engineer (Fokus pada optimasi XGBoost, Vector Database Qdrant, dan orkestrasi LangGraph AI Agent).\n'
-                      '- UI/UX & Frontend Engineer (Mendesain antarmuka Next.js yang familiar bagi verifikator BPJS agar proses adopsi teknologi berjalan mulus tanpa friction).\n'
-                      '- Medical Data Scientist (Pakar domain yang merumuskan aturan INA-CBG, menyusun Fraud Control Matrix, dan mengatur logika parameter medis di RAG).')
+    doc.add_heading('Bagian 9: Profil Pengembang & Rekam Jejak Eksekusi', level=1)
+    doc.add_paragraph('Inovasi GARDA-JKN dirancang, dikembangkan, dan divalidasi secara mandiri oleh Inovator Tunggal (Solo Innovator & Fullstack AI Architect). Kemandirian eksekusi ini membuktikan penguasaan komprehensif atas seluruh spektrum rekayasa teknologi dan tata kelola jaminan kesehatan (End-to-End Ownership):\n'
+                      '• Inovator & Arsitek Sistem: [Nama Lengkap Anda]\n'
+                      '  - Peran: Lead Fullstack AI Engineer & Health Informatics Specialist\n'
+                      '  - Keahlian Inti: Machine Learning Modeling, Agentic AI Architecture, Enterprise REST API Integration, dan Health Regulation Modeling.\n'
+                      '  - Rekam Jejak Pembuktian Teknis Solusi:\n'
+                      '    1. Data Science & ML Pipeline: Memproses dan merekayasa fitur 5.000 data historis klaim BPJS Kesehatan, membangun Stratified Isolation Forest (14 strata faskes), serta melatih model klasifikasi XGBoost dengan performa PR-AUC 0.9958 dan F1-Score 97.14%.\n'
+                      '    2. Medical Knowledge RAG: Membangun pipeline ingestion dokumen PNPK Kemenkes berbasis PyMuPDF4LLM dan indexing basis data vektor Qdrant dengan struktur relasional tabel utuh.\n'
+                      '    3. Agentic LLM Orchestration: Merancang arsitektur agen penalaran klinis LangGraph yang divalidasi melalui framework DeepEval meraih skor sempurna 1.00 pada metrik Faithfulness dan Relevancy.\n'
+                      '    4. Fullstack Engineering & E2E Testing: Mengembangkan backend microservice FastAPI, bridging API V-Claim BPJS, dashboard antarmuka Next.js/React, serta otomasi pengujian Playwright E2E.')
     
     # Save document
     doc.save('docs/Proposal_Healthkathon_2026_GARDA_JKN.docx')
