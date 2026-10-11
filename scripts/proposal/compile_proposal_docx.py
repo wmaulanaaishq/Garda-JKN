@@ -148,12 +148,52 @@ def create_docx():
 
     # Bagian 6
     doc.add_heading('Bagian 6: Rencana & Model Bisnis (VHDIC Canvas)', level=1)
-    doc.add_paragraph('Melalui pendekatan VHDIC Canvas, keberlanjutan bisnis GARDA-JKN dipetakan sebagai berikut:\n'
-                      '- Viability (Kelayakan Finansial): Keuntungan sistem didapat dari nilai penghematan anggaran (Cost-Saving). Dari estimasi Rp10 Triliun kebocoran JKN per tahun, apabila GARDA-JKN berhasil mencegah 1% saja, BPJS sudah menghemat Rp100 Miliar per tahun.\n'
-                      '- Hypothesis: Verifikator medis manusia tidak sanggup menelusuri 10 juta klaim/bulan. AI dengan RAG dapat menuntaskan cross-check medis dalam <10 detik.\n'
-                      '- Design: Terpisah dalam microservice (XGBoost Backend, LangGraph Arbiter, Next.js Frontend) sehingga aman dan scalable.\n'
-                      '- Implementation: Fase 1 (Simulasi Lingkungan Tertutup), Fase 2 (Pilot di RS Tipe A untuk live-shadowing), Fase 3 (Skalabilitas Nasional).\n'
-                      '- Cost (Struktur Biaya): Sangat efisien. Biaya token API LLM, cloud server, dan Vector DB sangat kecil (Return on Investment positif ekstrem) dibanding rasio fraud klaim yang digagalkan.')
+    doc.add_paragraph(
+        'Guna memastikan keberlanjutan, kepatuhan regulasi, dan skalabilitas adopsi di ekosistem kesehatan nasional, perancangan GARDA-JKN dipetakan secara holistik menggunakan kerangka VHDIC Canvas (Value, Health Governance, Discovery, Design, dan Delivery):'
+    )
+
+    doc.add_heading('A. Pilar Value (Dampak Nilai 5-Dimensi Kesehatan)', level=2)
+    doc.add_paragraph(
+        'Pilar Nilai memetakan bagaimana solusi GARDA-JKN menghadirkan manfaat transformatif lintas dimensi pemangku kepentingan dalam ekosistem jaminan kesehatan:'
+    )
+    doc.add_paragraph('• Equity (Ekuitas Layanan): Mencegah diskriminasi terhadap rumah sakit tipe kecil (Kelas C/D dan faskes daerah 3T) melalui mekanisme Stratified Isolation Forest yang mengevaluasi klaim hanya terhadap kelompok rekanan faskes yang setara (peer-group), bukan disamaratakan dengan RS metropolitan.')
+    doc.add_paragraph('• Population Health (Dampak Populasi): Menjaga solvabilitas dan keberlanjutan jangka panjang Dana Jaminan Sosial (DJS) Kesehatan agar tetap mampu menopang Universal Health Coverage bagi 270+ juta rakyat Indonesia.')
+    doc.add_paragraph('• Patient Value (Perlindungan Pasien): Melindungi hak medis pasien dari praktik terapi berlebihan (over-treatment) atau tindakan invasif fiktif, serta mencegah hangusnya kuota/plafon manfaat biaya akibat manipulasi koding.')
+    doc.add_paragraph('• Provider Value (Kelancaran Faskes): Mempercepat arus kas (cash flow) faskes yang jujur, di mana klaim bersih (Inlier wajar) langsung diproses Auto-Approval dalam hitungan detik tanpa tertahan antrean audit manual.')
+    doc.add_paragraph('• Cost Efficiency (Efisiensi Finansial): Menekan beban operasional audit manual BPJS, meminimalisir sengketa biaya (dispute klaim), dan menutup celah kebocoran dana secara pre-payment.')
+
+    doc.add_heading('B. Pilar Health Governance (Tata Kelola Regulasi, Klinis & Data)', level=2)
+    doc.add_paragraph(
+        'Tata kelola GARDA-JKN dirancang dengan standar kepatuhan hukum dan etika medis tertinggi untuk menjamin legitimasi setiap putusan adjudikasi:'
+    )
+    doc.add_paragraph('• Kepatuhan Regulasi (Regulatory Governance): Patuh penuh pada Permenkes No. 16/2019 tentang Pencegahan Fraud JKN, Permenkes No. 26/2021 (Pedoman INA-CBG), UU Kesehatan No. 17/2023, dan standar audit klaim BPJS Kesehatan.')
+    doc.add_paragraph('• Tata Kelola Klinis (Clinical Governance): Bersandar mutlak pada Pedoman Nasional Pelayanan Kedokteran (PNPK) Kemenkes RI, KMK Pedoman Praktik Klinis, dan konsensus profesi medis (KDIGO, PERKI, PAPDI).')
+    doc.add_paragraph('• Tata Kelola Data & Privasi (Data Governance): Implementasi Zero-Knowledge Privacy Masking yang patuh UU PDP No. 27/2022. Identitas NIK dan nama pasien disensor otomatis sebelum diproses model, didukung enkripsi data berstandar AES-256.')
+    doc.add_paragraph('• Tata Kelola Teknologi (Technical Governance): Orkestrasi deterministik berbasis LangGraph StateGraph (bebas infinite loop), Model Registry versi terkelola, audit trail TreeSHAP, dan modul pertahanan Prompt Injection Guardrail.')
+
+    doc.add_heading('C. Pilar Discovery (Tantangan Masalah & Pemangku Kepentingan)', level=2)
+    doc.add_paragraph(
+        'Pilar Penemuan mengidentifikasi akar permasalahan di lapangan serta memetakan entitas pengguna yang berinteraksi langsung dengan solusi:'
+    )
+    doc.add_paragraph('• Tantangan Utama (Challenge): Kebocoran dana JKN sebesar 5%–10% (Rp10–15 Triliun per tahun) akibat Upcoding, Phantom Billing, dan Readmisi, diperparah beban kerja verifikator 8–12 juta klaim per bulan dengan batas SLA 15 hari.')
+    doc.add_paragraph('• Pengguna Inti (Users): Dokter Verifikator Medis BPJS Kesehatan di Kantor Cabang/Kedeputian Wilayah, Tim Kendali Mutu dan Kendali Biaya (TKMKB), serta Tim Pencegahan Kecurangan internal Rumah Sakit.')
+    doc.add_paragraph('• Pemangku Kepentingan (Stakeholders): Direksi dan Dewan Pengawas BPJS Kesehatan, Kementerian Kesehatan RI, KPK, BPK, Asosiasi Rumah Sakit (PERSI), organisasi profesi dokter, dan seluruh rakyat peserta JKN.')
+
+    doc.add_heading('D. Pilar Design (Arsitektur Solusi & Interoperabilitas)', level=2)
+    doc.add_paragraph(
+        'Rancang bangun sistem mengedepankan arsitektur modular yang adaptif terhadap infrastruktur teknologi informasi kesehatan nasional:'
+    )
+    doc.add_paragraph('• Arsitektur Microservice 3-Lapis: Pemisahan tugas berjenjang yang mencakup Skrining Cepat XGBoost (Lapis 1), Mesin Vektor Qdrant RAG (Lapis 2), dan LangGraph Clinical Arbiter LLM (Lapis 3).')
+    doc.add_paragraph('• Desain Pengalaman Pengguna (UX Design): Dasbor Next.js modern yang mengadopsi alur SIMRS VClaim eksisting, dilengkapi transparansi TreeSHAP, sitasi regulasi PNPK, dan tombol putusan interaktif Human-in-the-Loop via SSE.')
+    doc.add_paragraph('• Desain Integrasi (Interoperability): Komunikasi melalui RESTful API asynchronous yang siap dihubungkan (bridging) langsung dengan sistem V-Claim, E-Klaim INA-CBG, dan Rekam Medis Elektronik (RME) berstandar HL7 FHIR.')
+
+    doc.add_heading('E. Pilar Delivery (Validasi Bukti, Skalabilitas & Model Bisnis)', level=2)
+    doc.add_paragraph(
+        'Strategi implementasi memadukan bukti empiris yang teruji dengan model keberlanjutan finansial yang sangat efisien bagi BPJS Kesehatan:'
+    )
+    doc.add_paragraph('• Bukti Validasi Kematangan (Evidence): Teruji pada 5.000 klaim historis dengan PR-AUC 0.9958, ROC-AUC 0.9996, F1-Score 97,14%, Precision@100 70,0%, serta evaluasi anti-halusinasi DeepEval bernilai sempurna 100%.')
+    doc.add_paragraph('• Rencana Skalabilitas (Scale): Peta jalan 3 fase yang terukur: Fase 1 (Simulasi lingkungan tertutup), Fase 2 (Pilot implementasi live-shadowing di RS Rujukan Tipe A), dan Fase 3 (Deployment skala nasional di seluruh Kedeputian Wilayah BPJS).')
+    doc.add_paragraph('• Model Bisnis Berbasis Penghematan (Value-Based Cost Saving): Dengan estimasi biaya komputasi server cloud yang sangat minim (< Rp100 juta/tahun), keberhasilan GARDA-JKN dalam mencegah 1% saja dari total potensi fraud nasional berpotensi menghemat kas negara sebesar Rp100 hingga Rp150 Miliar per tahun (Return on Investment / ROI ekstrem positif).')
 
     # Bagian 7
     doc.add_heading('Bagian 7: Dampak & Nilai Transformasi', level=1)

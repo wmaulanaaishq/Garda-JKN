@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "innovationName": "Garda JKN",
+    "date": "2026-10-11",
+    "author": "Wahyu Maulana Ishaq",
+    "version": "1.0.0",
+    "competition": "Healthkathon BPJS Kesehatan 2026",
+    "description": "VHDIC Canvas (Value, Health Governance, Discovery, Design, Delivery) untuk inovasi GARDA-JKN: Mesin Penalaran Klinis Adjudikasi Klaim Terpadu."
+  },
+  "sections": {
+    "gov_regulatory": "Kepatuhan hukum mutlak terhadap Permenkes No. 16/2019 tentang Pencegahan dan Penanganan Kecurangan (Fraud) dalam Program JKN, Permenkes No. 26/2021 tentang Pedoman INA-CBG, UU Kesehatan No. 17/2023, serta pemenuhan standar audit forensik klaim medis BPJS Kesehatan.",
+    "gov_clinical": "Tata kelola klinis bersandar 100% pada Pedoman Nasional Pelayanan Kedokteran (PNPK) resmi Kementerian Kesehatan RI, Keputusan Menteri Kesehatan (KMK), konsensus perhimpunan profesi (seperti KDIGO untuk nefrologi, PERKI untuk kardiovaskular), dan Petunjuk Teknis Verifikasi Klaim INA-CBG.",
+    "gov_data": "Implementasi Zero-Knowledge Privacy Masking yang patuh terhadap UU Pelindungan Data Pribadi (UU PDP No. 27/2022). Identitas sensitif (NIK, Nama Lengkap, Alamat Pasien) otomatis disensor sebelum data ditransmisikan, didukung penyimpanan lokal (on-premise / private cloud) berstandar enkripsi AES-256.",
+    "gov_tech": "Tata kelola teknologi deterministik menggunakan LangGraph StateGraph untuk mencegah risiko infinite loop pada agen AI. Dilengkapi sistem Model Registry, Audit Trail berbasis TreeSHAP, dan modul pertahanan Prompt Injection Guardrail guna menjamin stabilitas dan keamanan siber tingkat enterprise.",
+    "disc_challenge": "Kebocoran dana Program JKN yang diestimasi mencapai 5%–10% dari total pengeluaran klaim (sekitar Rp10–Rp15 Triliun per tahun) akibat kecurangan sistemik di FKRTL (Upcoding, Phantom Billing, Readmisi). Kondisi ini diperparah oleh beban kerja ekstrem verifikator medis yang harus meneliti 8–12 juta klaim per bulan dengan batas SLA pencairan 15 hari.",
+    "disc_users": "Pengguna utama mencakup Dokter Verifikator Medis BPJS Kesehatan di Kantor Cabang/Kedeputian Wilayah, Tim Kendali Mutu dan Kendali Biaya (TKMKB), serta Tim Pencegahan Fraud internal di Rumah Sakit/FKRTL untuk fungsi pre-submission audit.",
+    "disc_stakeholders": "Direksi dan Dewan Pengawas BPJS Kesehatan, Kementerian Kesehatan RI, Komisi Pemberantasan Korupsi (KPK), Badan Pemeriksa Keuangan (BPK), Asosiasi Rumah Sakit (PERSI), organisasi profesi medis (IDI, PDSKI, PAPDI), serta 270+ juta peserta Program JKN.",
+    "des_arch": "Arsitektur microservice 3-Lapis (Decoupled Architecture): Lapis 1 (Skrining Anomali Cepat berbasis Balanced Bagging XGBoost & Stratified Isolation Forest), Lapis 2 (Knowledge Base Medis berbasis Qdrant Vector RAG & PyMuPDF4LLM), dan Lapis 3 (Clinical Arbiter berbasis LangGraph & LLM DeepSeek-Chat).",
+    "des_ux": "Antarmuka berbasis web modern (Next.js & Tailwind CSS) yang mengadopsi alur kerja familiar SIMRS VClaim BPJS. Dilengkapi visualisasi transparansi SHAP, sitasi pasal regulasi PNPK, dan tombol putusan interaktif Human-in-the-Loop yang didukung streaming respon real-time (Server-Sent Events / SSE).",
+    "des_integration": "Interoperabilitas penuh melalui RESTful API asynchronous yang siap diintegrasikan (bridging) langsung dengan ekosistem digital BPJS Kesehatan eksisting (V-Claim, E-Klaim INA-CBG, dan sistem Rekam Medis Elektronik / RME rumah sakit melalui standar HL7 FHIR).",
+    "del_evidence": "Validasi empiris Minimum Viable Product (MVP) menggunakan 5.000 klaim historis tervalidasi BPJS: PR-AUC 0.9958, ROC-AUC 0.9996, F1-Score Kelas Fraud 97,14%, Precision@100 70,0%, evaluasi anti-halusinasi DeepEval (Faithfulness 100%, Relevancy 100%), dan pengujian otomatis Playwright E2E.",
+    "del_scale": "Roadmap skala 3 fase: Fase 1 (Simulasi lingkungan tertutup dan penalaan threshold), Fase 2 (Pilot implementasi live-shadowing di 3 Rumah Sakit Rujukan Nasional Tipe A), dan Fase 3 (Deployment skala nasional di seluruh Kedeputian Wilayah BPJS Kesehatan melalui arsitektur container Docker/Kubernetes).",
+    "del_business": "Model bisnis berbasis Value-Based Cost Saving: Dengan biaya infrastruktur komputasi yang sangat efisien (API token dan server < Rp100 juta/tahun), pencegahan kebocoran dana sebesar 1% saja dari potensi fraud nasional berpotensi menyelamatkan anggaran kas negara sebesar Rp100 hingga Rp150 Miliar per tahun (Return on Investment / ROI ekstrem positif).",
+    "val_equity": "Mencegah diskriminasi terhadap rumah sakit tipe kecil (Kelas C dan D atau daerah 3T) melalui mekanisme Stratified Isolation Forest yang mengevaluasi klaim hanya terhadap kelompok rekanan (peer-group) yang setara, bukan disamaratakan dengan rumah sakit rujukan metropolitan.",
+    "val_population": "Menjaga solvabilitas dan keberlanjutan jangka panjang Dana Jaminan Sosial (DJS) Kesehatan agar tetap mampu menopang jaminan kesehatan semesta (Universal Health Coverage) bagi seluruh lapisan rakyat Indonesia.",
+    "val_patient": "Melindungi hak medis pasien dari praktik terapi berlebihan (over-treatment) atau tindakan invasif fiktif yang tidak perlu, serta mencegah hangusnya plafon manfaat biaya pengobatan akibat manipulasi koding rumah sakit.",
+    "val_provider": "Mempercepat arus kas (cash flow) rumah sakit yang jujur dan patuh, di mana klaim berstatus bersih (Inlier wajar) dapat langsung lolos Auto-Approval dalam hitungan detik tanpa harus tertahan berhari-hari dalam antrean verifikasi manual.",
+    "val_cost": "Memangkas beban biaya operasional audit klaim BPJS secara drastis, mengurangi kebutuhan lembur verifikator, serta meminimalisir perselisihan biaya (*dispute klaim*) antara BPJS Kesehatan dan fasilitas kesehatan."
+  }
+}
